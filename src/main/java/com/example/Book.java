@@ -2,14 +2,15 @@ package com.example;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Book implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private final String title;
-    private final String author;
-    private final int yearPublished;
+    private String title;
+    private String author;
+    private int yearPublished;
 
     // Constructor
     public Book(String title, String author, int yearPublished) {
@@ -31,15 +32,32 @@ public class Book implements Serializable {
         return yearPublished;
     }
 
+    // Setters
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+    public void setYearPublished(int yearPublished) {
+        this.yearPublished = yearPublished;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-        if (obj == null || obj.getClass() != this.getClass())
+        if (obj == null || getClass() != obj.getClass())
             return false;
         Book book = (Book) obj;
         return yearPublished == book.yearPublished &&
-                title.equals(book.title) &&
-                author.equals(book.author);
+                Objects.equals(title, book.title) &&
+                Objects.equals(author, book.author);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, author, yearPublished);
     }
 }

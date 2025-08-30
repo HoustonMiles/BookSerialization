@@ -18,6 +18,14 @@ public class BookDriver {
         // Load from CSV
         Set<Book> loadedLibrary = new HashSet<>(BookUtils.deserialize("books.csv"));
 
+        for (Book b : loadedLibrary) {
+            if (b.getTitle().equals("Dune")) {
+                // Change something to break equality
+                b.setAuthor("Fake Author");
+                break;
+            }
+        }
+
         boolean areEqual = library.equals(loadedLibrary);
         if (areEqual) {
             System.out.println("Books are the same!");
