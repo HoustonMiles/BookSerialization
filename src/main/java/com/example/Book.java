@@ -1,13 +1,15 @@
 package com.example;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 public class Book implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
-    private String title;
-    private String author;
-    private int yearPublished;
+    private final String title;
+    private final String author;
+    private final int yearPublished;
 
     // Constructor
     public Book(String title, String author, int yearPublished) {
