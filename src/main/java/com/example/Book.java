@@ -10,12 +10,9 @@ public class Book extends Media {
         this.author = author;
     }
 
+    // Getters
     @Override
     public String getCreator() {
-        return author;
-    }
-    // Getters
-    public String getAuthor() {
         return author;
     }
 

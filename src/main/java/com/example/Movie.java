@@ -12,12 +12,9 @@ public class Movie extends Media {
         this.runtime = runtime;
     }
 
+    // Getters
     @Override
     public String getCreator() {
-        return director;
-    }
-    // Getters
-    public String getDirector() {
         return director;
     }
     public int getRuntime() { return runtime; }

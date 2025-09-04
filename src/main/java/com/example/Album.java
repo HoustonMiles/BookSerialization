@@ -12,13 +12,13 @@ public class Album extends Media{
         this.runtime = runtime;
     }
 
+    // Getters
     @Override
     public String getCreator() {
         return artist;
     }
-    // Getters
-    public String getArtist() { return artist; }
     public int getRuntime() { return runtime; }
+
     // Setters
     public void setArtist(String artist) { this.artist = artist; }
     public void setRuntime(int runtime) { this.runtime = runtime; }
