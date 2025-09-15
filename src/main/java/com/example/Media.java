@@ -2,49 +2,21 @@ package com.example;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Objects;
 
-public abstract class Media implements Serializable {
+public interface Media extends Serializable {
     @Serial
-    private static final long serialVersionUID = 1L;
+    long serialVersionUID = 1L;
 
-    private String title;
-    private int yearPublished;
+    String getCreator();
 
-    public Media(String title, int yearPublished) {
-        this.title = title;
-        this.yearPublished = yearPublished;
-    }
+    String getTitle();
 
-    public abstract String getCreator();
+    int getYearPublished();
 
-    public String getTitle() {
-        return title;
-    }
+    void setCreator(String creator);
 
-    public int getYearPublished() {
-        return yearPublished;
-    }
+    void setTitle(String title);
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    void setYearPublished(int yearPublished);
 
-    public void setYearPublished(int yearPublished) {
-        this.yearPublished = yearPublished;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        Media media = (Media) o;
-        return yearPublished == media.yearPublished && Objects.equals(title, media.title);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(title, yearPublished);
-    }
 }

@@ -2,25 +2,29 @@ package com.example;
 
 import java.util.Objects;
 
-public class Movie extends Media {
+public class Movie implements Media {
     private String director;
+    private String title;
+    private int yearPublished;
     private int runtime;
 
     public Movie(String title, String director, int yearPublished, int runtime) {
-        super(title, yearPublished);
+        this.title = title;
         this.director = director;
+        this.yearPublished = yearPublished;
         this.runtime = runtime;
     }
 
     // Getters
-    @Override
-    public String getCreator() {
-        return director;
-    }
+    public String getCreator() { return director; }
+    public String getTitle() { return title; }
+    public int getYearPublished() { return yearPublished; }
     public int getRuntime() { return runtime; }
 
     // Setters
-    public void setDirector(String author) { this.director = author; }
+    public void setCreator(String director) { this.director = director; }
+    public void setTitle(String title) { this.title = title; }
+    public void setYearPublished(int yearPublished) { this.yearPublished = yearPublished; }
     public void setRuntime(int runtime) { this.runtime = runtime; }
 
     @Override
@@ -28,11 +32,11 @@ public class Movie extends Media {
         if (!super.equals(o))
             return false;
         Movie movie = (Movie) o;
-        return director.equals(movie.director) && runtime == movie.runtime;
+        return title.equals(movie.getTitle()) && director.equals(movie.getCreator()) && yearPublished == movie.getYearPublished() && runtime == movie.getRuntime();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), director, runtime);
+        return Objects.hash(title, director, yearPublished, runtime);
     }
 }
