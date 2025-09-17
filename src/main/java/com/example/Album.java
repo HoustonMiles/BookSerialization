@@ -2,25 +2,40 @@ package com.example;
 
 import java.util.Objects;
 
-public class Album extends Media{
+public class Album implements Media{
     private String artist;
+    private String title;
+    private int yearPublished;
     private int runtime;
 
     public Album(String title, String artist, int yearPublished, int runtime){
-        super(title, yearPublished);
         this.artist = artist;
+        this.title = title;
+        this.yearPublished = yearPublished;
         this.runtime = runtime;
     }
 
     // Getters
-    @Override
     public String getCreator() {
-        return artist;
+        return this.artist;
     }
-    public int getRuntime() { return runtime; }
+
+    public String getTitle() {
+        return this.title;
+    }
+
+    public int getYearPublished() {
+        return this.yearPublished;
+    }
+
+    public int getRuntime() {
+        return this.runtime;
+    }
 
     // Setters
-    public void setArtist(String artist) { this.artist = artist; }
+    public void setCreator(String artist) { this.artist = artist; }
+    public void setTitle(String title) { this.title = title; }
+    public void setYearPublished(int yearPublished) { this.yearPublished = yearPublished; }
     public void setRuntime(int runtime) { this.runtime = runtime; }
 
     @Override
@@ -28,11 +43,11 @@ public class Album extends Media{
         if (!super.equals(o))
             return false;
         Album album = (Album) o;
-        return artist.equals(album.artist) && runtime == album.runtime;
+        return title.equals(album.getTitle()) && artist.equals(album.getCreator()) && yearPublished == album.getYearPublished() && runtime == album.getRuntime();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), artist, runtime);
+        return Objects.hash(title, artist, yearPublished, runtime);
     }
 }
