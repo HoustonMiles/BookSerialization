@@ -3,7 +3,7 @@ package com.example;
 import java.util.Objects;
 import java.util.TreeSet;
 
-public class Book implements Media {
+public class Book implements Media, Comparable<Book> {
 
     private String author;
     private String title;
@@ -69,5 +69,10 @@ public class Book implements Media {
     @Override
     public int hashCode() {
         return Objects.hash(title, author, yearPublished, isbn);
+    }
+
+    @Override
+    public int compareTo(Book o) {
+        return 0;
     }
 }
