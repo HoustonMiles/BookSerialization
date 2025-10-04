@@ -1,6 +1,7 @@
 package com.example;
 
 import java.util.Objects;
+import java.util.Set;
 import java.util.TreeSet;
 
 public class Book implements Media, Comparable<Book> {
@@ -8,9 +9,9 @@ public class Book implements Media, Comparable<Book> {
     private String author;
     private String title;
     private int yearPublished;
-    private int isbn;
+    private long isbn;
 
-    public Book(String title, String author, int yearPublished, int isbn) {
+    public Book(String title, String author, int yearPublished, long isbn) {
         this.author = author;
         this.title = title;
         this.yearPublished = yearPublished;
@@ -30,7 +31,7 @@ public class Book implements Media, Comparable<Book> {
         return this.yearPublished;
     }
 
-    public int getIsbn() {
+    public long getIsbn() {
         return this.isbn;
     }
 
@@ -47,23 +48,24 @@ public class Book implements Media, Comparable<Book> {
         this.yearPublished = yearPublished;
     }
 
-    public void setIsbn(int isbn) {
+    public void setIsbn(long isbn) {
         this.isbn = isbn;
+    }
+
+    public String toString() {
+        String output = this.author + "\t" + this.title + "\t" + this.yearPublished + "\t" + this.isbn + "\n";
+        return output;
     }
 
     @Override
     public boolean equals(Object o) {
-        boolean bool = false;
-        if (!super.equals(o))
-            return false;
-        TreeSet set = (TreeSet) o;
-        for (Object obj: set) {
-            Book book = (Book) obj;
-            if (title.equals(book.getTitle()) && author.equals(book.getCreator()) && yearPublished == book.getYearPublished() && isbn == book.getIsbn()) {
-                bool = true;
-            }
-        }
-        return bool;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Book book = (Book) o;
+        return Objects.equals(title, book.title) &&
+                Objects.equals(author, book.author) &&
+                yearPublished == book.yearPublished &&
+                isbn == book.isbn;
     }
 
     @Override
@@ -73,6 +75,12 @@ public class Book implements Media, Comparable<Book> {
 
     @Override
     public int compareTo(Book o) {
-        return 0;
+        int yearCompare = Integer.compare(this.yearPublished, o.yearPublished);
+        if (yearCompare != 0) return yearCompare;
+
+        int titleCompare = this.title.compareTo(o.title);
+        if (titleCompare != 0) return titleCompare;
+
+        return this.author.compareTo(o.author);
     }
 }
