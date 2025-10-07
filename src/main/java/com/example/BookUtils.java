@@ -9,7 +9,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.*;
 
 public class BookUtils {
-    public void serializeToCSV(Set<Book> books, String filename) throws IOException {
+    public static void serializeToCSV(Set<Book> books, String filename) throws IOException {
         List<String> lines = new ArrayList<>();
         lines.add("Title,Author,YearPublished,ISBN"); // CSV header
 
@@ -26,7 +26,7 @@ public class BookUtils {
         }
     }
 
-    public Set<Book> deserializeFromCSV(String filename) throws IOException {
+    public static Set<Book> deserializeFromCSV(String filename) throws IOException {
         Set<Book> books = new TreeSet<>();
 
         try {

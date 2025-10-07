@@ -13,8 +13,7 @@ import java.util.TreeSet;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BookTest {
-    private Set<Book> originalBooks = new TreeSet<>();
-    private BookUtils bookUtils = new BookUtils();;
+    private final Set<Book> originalBooks = new TreeSet<>();
 
     @BeforeEach
     void setUp() {
@@ -34,13 +33,13 @@ public class BookTest {
         String filename = "books.csv";
 
         // Serialize the original books to CSV
-        bookUtils.serializeToCSV(originalBooks, filename);
+        BookUtils.serializeToCSV(originalBooks, filename);
 
         System.out.println("Test");
         // Deserialize the original books from CSV
-        Set<Book> deserializedBooks = bookUtils.deserializeFromCSV(filename);
+        Set<Book> deserializedBooks = BookUtils.deserializeFromCSV(filename);
 
         // Assert that the original and deserialized sets are equal
-        assertTrue(originalBooks.equals(deserializedBooks), "The deserialized books should be equal to the original books.");
+        assertEquals(originalBooks, deserializedBooks, "The deserialized books should be equal to the original books.");
     }
 }
