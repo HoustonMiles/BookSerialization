@@ -9,9 +9,9 @@ public class Book implements Media, Comparable<Book> {
     private String author;
     private String title;
     private int yearPublished;
-    private long isbn;
+    private String isbn;
 
-    public Book(String title, String author, int yearPublished, long isbn) {
+    public Book(String title, String author, int yearPublished, String isbn) {
         this.author = author;
         this.title = title;
         this.yearPublished = yearPublished;
@@ -31,7 +31,7 @@ public class Book implements Media, Comparable<Book> {
         return this.yearPublished;
     }
 
-    public long getIsbn() {
+    public String getIsbn() {
         return this.isbn;
     }
 
@@ -48,7 +48,7 @@ public class Book implements Media, Comparable<Book> {
         this.yearPublished = yearPublished;
     }
 
-    public void setIsbn(long isbn) {
+    public void setIsbn(String isbn) {
         this.isbn = isbn;
     }
 
@@ -65,7 +65,7 @@ public class Book implements Media, Comparable<Book> {
         return Objects.equals(title, book.title) &&
                 Objects.equals(author, book.author) &&
                 yearPublished == book.yearPublished &&
-                isbn == book.isbn;
+                Objects.equals(isbn, book.isbn);
     }
 
     @Override
@@ -75,6 +75,15 @@ public class Book implements Media, Comparable<Book> {
 
     @Override
     public int compareTo(Book o) {
-        return Integer.compare(this.yearPublished, o.yearPublished);
+        int result = Integer.compare(this.yearPublished, o.yearPublished);
+        if (result != 0) return result;
+
+        result = this.title.compareTo(o.title);
+        if (result != 0) return result;
+
+        result = this.author.compareTo(o.author);
+        if (result != 0) return result;
+
+        return this.isbn.compareTo(o.isbn);
     }
 }

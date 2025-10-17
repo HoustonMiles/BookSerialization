@@ -14,7 +14,7 @@ public class BookUtils {
         lines.add("Title,Author,YearPublished,ISBN"); // CSV header
 
         for (Book book: books) { // Skip header
-            String line = String.format("%s,%s,%d,%d", book.getTitle(), book.getCreator(), book.getYearPublished(), book.getIsbn());
+            String line = String.format("%s,%s,%d,%s", book.getTitle(), book.getCreator(), book.getYearPublished(), book.getIsbn());
             lines.add(line);
         }
 
@@ -37,7 +37,7 @@ public class BookUtils {
                     String title = parts[0];
                     String author = parts[1];
                     int year = Integer.parseInt(parts[2]);
-                    long isbn = Long.parseLong(parts[3]);
+                    String isbn = parts[3];
                     Book book = new Book(title, author, year, isbn);
                     books.add(book);
                 }

@@ -17,9 +17,9 @@ public class BookTest {
 
     @BeforeEach
     void setUp() {
-        Book book3 = new Book("The Way of Kings", "Brandon Sanderson", 2010, 9781427228154L);
-        Book book1 = new Book("The Great Gatsby", "F. Scott Fitzgerald", 1925, 9780743273565L);
-        Book book2 = new Book("1984", "George Orwell", 1949, 9780451524935L);
+        Book book3 = new Book("The Way of Kings", "Brandon Sanderson", 2010, "9781427228154");
+        Book book1 = new Book("The Great Gatsby", "F. Scott Fitzgerald", 1925, "9780743273565");
+        Book book2 = new Book("1984", "George Orwell", 1949, "9780451524935");
 
         originalBooks.addAll(Arrays.asList(book1, book2, book3));
     }
