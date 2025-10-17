@@ -75,12 +75,6 @@ public class Book implements Media, Comparable<Book> {
 
     @Override
     public int compareTo(Book o) {
-        int yearCompare = Integer.compare(this.yearPublished, o.yearPublished);
-        if (yearCompare != 0) return yearCompare;
-
-        int titleCompare = this.title.compareTo(o.title);
-        if (titleCompare != 0) return titleCompare;
-
-        return this.author.compareTo(o.author);
+        return Integer.compare(this.yearPublished, o.yearPublished);
     }
 }
