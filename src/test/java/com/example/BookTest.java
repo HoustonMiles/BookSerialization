@@ -29,15 +29,27 @@ public class BookTest {
     }
 
     @Test
-    public void serializeBook() throws IOException {
-        String filename = "books.csv";
+    public void serializeBook() throws IOException, ClassNotFoundException {
+        String csvFile = "book.csv";
+        String xmlFile = "book.xml";
+        String binaryFile = "book.bin";
 
         // Serialize the original books to CSV
-        BookUtils.serializeToCSV(originalBooks, filename);
+        //BookUtils.serializeToCSV(originalBooks, csvFile);
+        BookUtils.serializeToXML(originalBooks, xmlFile);
+        //BinarySerializer.binarySerialize(originalBooks, binaryFile);
+        for (Book book : originalBooks) {
+            System.out.println(book.toString());
+        }
 
         System.out.println("Test");
         // Deserialize the original books from CSV
-        Set<Book> deserializedBooks = BookUtils.deserializeFromCSV(filename);
+        //Set<Book> deserializedBooks = BookUtils.deserializeFromXML(binaryFile);
+        Set<Book> deserializedBooks = BookUtils.deserializeFromXML(xmlFile);
+        //Set<Book> deserializedBooks = (Set<Book>) BinarySerializer.binaryDeserialize(binaryFile);
+        for (Book book : deserializedBooks) {
+            System.out.println(book.toString());
+        }
 
         // Assert that the original and deserialized sets are equal
         assertEquals(originalBooks, deserializedBooks, "The deserialized books should be equal to the original books.");

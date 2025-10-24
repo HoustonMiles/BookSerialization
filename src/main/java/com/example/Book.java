@@ -53,7 +53,7 @@ public class Book implements Media, Comparable<Book> {
     }
 
     public String toString() {
-        String output = this.author + "\t" + this.title + "\t" + this.yearPublished + "\t" + this.isbn + "\n";
+        String output = this.author + ",\t" + this.title + ",\t" + this.yearPublished + ",\t" + this.isbn;
         return output;
     }
 
