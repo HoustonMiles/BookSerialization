@@ -32,11 +32,11 @@ public class BookTest {
     public void serializeBook() throws IOException, ClassNotFoundException {
         String csvFile = "book.csv";
         String xmlFile = "book.xml";
-        String binaryFile = "book.bin";
+        String binaryFile = "book.ser";
 
         // Serialize the original books to CSV
-        //BookUtils.serializeToCSV(originalBooks, csvFile);
-        //BookUtils.serializeToXML(originalBooks, xmlFile);
+        BookUtils.serializeToCSV(originalBooks, csvFile);
+        BookUtils.serializeToXML(originalBooks, xmlFile);
         BinarySerializer.binarySerialize(originalBooks, binaryFile);
         for (Book book : originalBooks) {
             System.out.println(book.toString());
@@ -44,14 +44,16 @@ public class BookTest {
 
         System.out.println("Test");
         // Deserialize the original books from CSV
-        //Set<Book> deserializedBooks = BookUtils.deserializeFromXML(binaryFile);
-        //Set<Book> deserializedBooks = BookUtils.deserializeFromXML(xmlFile);
-        Set<Book> deserializedBooks = (Set<Book>) BinarySerializer.binaryDeserialize(binaryFile);
-        for (Book book : deserializedBooks) {
+        Set<Book> deserializedCSVToBooks = BookUtils.deserializeFromCSV(csvFile);
+        Set<Book> deserializedXMLToBooks = BookUtils.deserializeFromXML(xmlFile);
+        Set<Book> deserializedBinaryToBooks = (Set<Book>) BinarySerializer.binaryDeserialize(binaryFile);
+        for (Book book : deserializedXMLToBooks) {
             System.out.println(book.toString());
         }
 
         // Assert that the original and deserialized sets are equal
-        assertEquals(originalBooks, deserializedBooks, "The deserialized books should be equal to the original books.");
+        assertEquals(originalBooks, deserializedCSVToBooks, "The deserialized books should be equal to the original books.");
+        assertEquals(originalBooks, deserializedXMLToBooks, "The deserialized books should be equal to the original books.");
+        assertEquals(originalBooks, deserializedBinaryToBooks, "The deserialized books should be equal to the original books.");
     }
 }

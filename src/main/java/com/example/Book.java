@@ -1,10 +1,14 @@
 package com.example;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class Book implements Media, Comparable<Book> {
+public class Book implements Serializable, Comparable<Book> {
+    @Serial
+    long serialVersionUID = 1L;
 
     private String author;
     private String title;
