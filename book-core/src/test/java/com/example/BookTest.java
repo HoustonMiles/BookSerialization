@@ -31,7 +31,7 @@ public class BookTest {
     public void serializeBook() throws IOException, ClassNotFoundException {
         String csvFile = "book.csv";
         String xmlFile = "book.xml";
-        String binaryFile = "book.ser";
+        String binaryFile = "book.bin";
 
         // Serialize the original books to CSV
         BookUtils.serializeToCSV(originalBooks, csvFile);
