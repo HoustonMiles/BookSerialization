@@ -1,18 +1,16 @@
 package com.example.ui;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Label label = new Label("Book Library Manager - JavaFX is working!");
-        StackPane root = new StackPane(label);
-        Scene scene = new Scene(root, 600, 400);
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("BookLibrary.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 900, 600);
 
         primaryStage.setTitle("Book Library Manager");
         primaryStage.setScene(scene);
