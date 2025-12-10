@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Set;
 import java.util.TreeSet;
@@ -38,7 +39,6 @@ public class MainAppController {
     @FXML private Label statusLabel;
 
     private ObservableList<Book> bookList = FXCollections.observableArrayList();
-    private TreeSet<Book> bookSet = new TreeSet<>();
     String csvFile = "book.csv";
     String xmlFile = "book.xml";
     String binaryFile = "book.bin";
@@ -94,36 +94,82 @@ public class MainAppController {
     }
 
     @FXML
-    private void handleSaveCSVButtonAction() throws IOException {
-        bookSet = new TreeSet<>(bookList);
-        BookUtils.serializeToCSV(bookSet, csvFile);
+    private void handleSaveCSVButtonAction() {
+        try {
+            TreeSet<Book> bookSet = new TreeSet<>(bookList);
+            BookUtils.serializeToCSV(bookSet, csvFile);
+            statusLabel.setText("CSV serialized!");
+        } catch (IOException e) {
+            statusLabel.setText("Error saving to CSV: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @FXML
     private void handleLoadCSVButtonAction() throws IOException {
-        Set<Book> deserializedCSVToBooks = BookUtils.deserializeFromCSV(csvFile);
+        try {
+            Set<Book> deserializedCSVToBooks = BookUtils.deserializeFromCSV(csvFile);
+            bookList.clear();
+            bookList.addAll(deserializedCSVToBooks);
+            statusLabel.setText("CSV deserialized!");
+        } catch (IOException e) {
+            statusLabel.setText("Error loading from CSV: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @FXML
     private void handleSaveXMLButtonAction() throws IOException {
-        bookSet = new TreeSet<>(bookList);
-        BookUtils.serializeToXML(bookSet, xmlFile);
+        try {
+            TreeSet<Book> bookSet = new TreeSet<>(bookList);
+            BookUtils.serializeToXML(bookSet, xmlFile);
+            statusLabel.setText("XML serialized!");
+        } catch (IOException e) {
+            statusLabel.setText("Error saving to XML: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @FXML
     private void handleLoadXMLButtonAction() throws IOException {
-        Set<Book> deserializedXMLToBooks = BookUtils.deserializeFromXML(xmlFile);
+        try {
+            Set<Book> deserializedXMLToBooks = BookUtils.deserializeFromXML(xmlFile);
+            bookList.clear();
+            bookList.addAll(deserializedXMLToBooks);
+            statusLabel.setText("XML deserialized!");
+        } catch (IOException e) {
+            statusLabel.setText("Error loading from XML: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @FXML
     private void handleSaveBinaryButtonAction() {
-        bookSet = new TreeSet<>(bookList);
-        BinarySerializer.binarySerialize(bookSet, binaryFile);
+        try {
+            TreeSet<Book> bookSet = new TreeSet<>(bookList);
+            BinarySerializer.binarySerialize(bookSet, binaryFile);
+            statusLabel.setText("Binary serialized!");
+        } catch (Exception e) {
+            statusLabel.setText("Error binary serialization: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @FXML
     private void handleLoadBinaryButtonAction() throws ClassNotFoundException {
-        BinarySerializer.binaryDeserialize(binaryFile);
+        try {
+            Set<Book> loadedBooks = (Set<Book>) BinarySerializer.binaryDeserialize(binaryFile);
+            if (loadedBooks != null) {
+                bookList.clear();
+                bookList.addAll(loadedBooks);
+                statusLabel.setText("Binary deserialized!");
+            } else {
+                statusLabel.setText("Error binary deserialization!");
+            }
+        } catch (ClassNotFoundException e) {
+            statusLabel.setText("Error binary deserialization: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 }

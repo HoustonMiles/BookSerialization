@@ -25,8 +25,8 @@ public class BookUtils {
             lines.add(line);
         }
 
-        String path = "BookSerialization/logs/" + filename;
-        File file = new File(path);
+        Path path = Paths.get("..", "logs", filename);
+        Files.write(path, lines, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         System.out.println("Library saved to CSV: " + filename);
     }
 
@@ -34,7 +34,7 @@ public class BookUtils {
         Set<Book> books = new TreeSet<>();
 
         try {
-            List<String> lines = Files.readAllLines(Path.of("BookSerialization/logs/" + filename));
+            List<String> lines = Files.readAllLines(Path.of("..", "logs", filename));
             for (int i = 1; i < lines.size(); i++) { // Skip header
                 String[] parts = lines.get(i).split(",");
                 if (parts.length >= 4) {
@@ -85,9 +85,11 @@ public class BookUtils {
             throw new RuntimeException(e);
         }
         DOMSource source = new DOMSource(doc);
-        StreamResult result = new StreamResult(new File("BookSerialization/logs/" + filename));
+        Path path = Paths.get("..", "logs", filename);
+        StreamResult result = new StreamResult(path.toFile());
         try {
             transformer.transform(source, result);
+            System.out.println("Library saved to XML: " + filename);
         } catch (TransformerException e) {
             throw new RuntimeException(e);
         }
@@ -105,7 +107,8 @@ public class BookUtils {
         }
         Document doc;
         try {
-            doc = builder.parse(new File("BookSerialization/logs/" + filename));
+            Path path = Paths.get("..", "logs", filename);
+            doc = builder.parse(path.toFile());
         } catch (SAXException e) {
             throw new RuntimeException(e);
         }
@@ -124,6 +127,7 @@ public class BookUtils {
                 books.add(new Book(title, author, year, isbn));
             }
         }
+        System.out.println("Library loaded from XML: " + filename);
         return books;
     }
 }
