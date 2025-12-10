@@ -9,7 +9,7 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("BookLibrary.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("BookLibrary.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 900, 600);
 
         primaryStage.setTitle("Book Library Manager");

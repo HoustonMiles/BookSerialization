@@ -5,7 +5,7 @@ public class BinarySerializer {
     public static void binarySerialize(Object obj, String file) {
         ObjectOutputStream oos = null;
         try {
-            oos = new ObjectOutputStream(new FileOutputStream(file));
+            oos = new ObjectOutputStream(new FileOutputStream("BookSerialization/logs/" + file));
             oos.writeObject(obj);
         } catch (FileNotFoundException e) {
             e.printStackTrace();

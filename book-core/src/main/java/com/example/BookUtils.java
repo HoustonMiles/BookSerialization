@@ -2,6 +2,7 @@ package com.example;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
@@ -20,23 +21,20 @@ public class BookUtils {
         lines.add("Title,Author,YearPublished,ISBN"); // CSV header
 
         for (Book book: books) { // Skip header
-            String line = String.format("%s,%s,%d,%s", book.getTitle(), book.getCreator(), book.getYearPublished(), book.getIsbn());
+            String line = String.format("%s,%s,%d,%s", book.getTitle(), book.getAuthor(), book.getYear(), book.getIsbn());
             lines.add(line);
         }
 
-        try {
-            Files.write(Paths.get(filename), lines, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-            System.out.println("Library saved to CSV: " + filename);
-        } catch (IOException e) {
-            throw e;
-        }
+        String path = "BookSerialization/logs/" + filename;
+        File file = new File(path);
+        System.out.println("Library saved to CSV: " + filename);
     }
 
     public static Set<Book> deserializeFromCSV(String filename) throws IOException {
         Set<Book> books = new TreeSet<>();
 
         try {
-            List<String> lines = Files.readAllLines(Paths.get(filename));
+            List<String> lines = Files.readAllLines(Path.of("BookSerialization/logs/" + filename));
             for (int i = 1; i < lines.size(); i++) { // Skip header
                 String[] parts = lines.get(i).split(",");
                 if (parts.length >= 4) {
@@ -73,8 +71,8 @@ public class BookUtils {
         for (Book book: books) {
             Element bookElement = doc.createElement("book");
             bookElement.setAttribute("title", book.getTitle());
-            bookElement.setAttribute("author", book.getCreator());
-            bookElement.setAttribute("yearPublished", String.valueOf(book.getYearPublished()));
+            bookElement.setAttribute("author", book.getAuthor());
+            bookElement.setAttribute("yearPublished", String.valueOf(book.getYear()));
             bookElement.setAttribute("isbn", book.getIsbn());
             root.appendChild(bookElement);
         }
@@ -87,7 +85,7 @@ public class BookUtils {
             throw new RuntimeException(e);
         }
         DOMSource source = new DOMSource(doc);
-        StreamResult result = new StreamResult(new File(filename));
+        StreamResult result = new StreamResult(new File("BookSerialization/logs/" + filename));
         try {
             transformer.transform(source, result);
         } catch (TransformerException e) {
@@ -107,7 +105,7 @@ public class BookUtils {
         }
         Document doc;
         try {
-            doc = builder.parse(new File(filename));
+            doc = builder.parse(new File("BookSerialization/logs/" + filename));
         } catch (SAXException e) {
             throw new RuntimeException(e);
         }

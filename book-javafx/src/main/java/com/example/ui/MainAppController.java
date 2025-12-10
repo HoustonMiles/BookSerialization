@@ -9,6 +9,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import java.io.IOException;
+import java.util.Set;
+import java.util.TreeSet;
+
 public class MainAppController {
     @FXML private TableView<Book> bookTable;
 
@@ -34,6 +38,10 @@ public class MainAppController {
     @FXML private Label statusLabel;
 
     private ObservableList<Book> bookList = FXCollections.observableArrayList();
+    private TreeSet<Book> bookSet = new TreeSet<>();
+    String csvFile = "book.csv";
+    String xmlFile = "book.xml";
+    String binaryFile = "book.bin";
 
     @FXML
     private void initialize() {
@@ -50,9 +58,9 @@ public class MainAppController {
     @FXML
     private void handleAddButtonAction() {
         try {
-            String title = titleField.getText().trim();
-            String author = authorField.getText().trim();
-            int year = Integer.parseInt(yearField.getText().trim());
+            String title = titleField.getText();
+            String author = authorField.getText();
+            Integer year = Integer.parseInt(yearField.getText());
             String isbn = isbnField.getText().trim();
 
             if (title.isEmpty() || author.isEmpty() || year == 0 || isbn.isEmpty()) {
@@ -86,33 +94,36 @@ public class MainAppController {
     }
 
     @FXML
-    private void handleSaveCSVButtonAction() {
-
+    private void handleSaveCSVButtonAction() throws IOException {
+        bookSet = new TreeSet<>(bookList);
+        BookUtils.serializeToCSV(bookSet, csvFile);
     }
 
     @FXML
-    private void handleLoadCSVButtonAction() {
-
+    private void handleLoadCSVButtonAction() throws IOException {
+        Set<Book> deserializedCSVToBooks = BookUtils.deserializeFromCSV(csvFile);
     }
 
     @FXML
-    private void handleSaveXMLButtonAction() {
-
+    private void handleSaveXMLButtonAction() throws IOException {
+        bookSet = new TreeSet<>(bookList);
+        BookUtils.serializeToXML(bookSet, xmlFile);
     }
 
     @FXML
-    private void handleLoadXMLButtonAction() {
-
+    private void handleLoadXMLButtonAction() throws IOException {
+        Set<Book> deserializedXMLToBooks = BookUtils.deserializeFromXML(xmlFile);
     }
 
     @FXML
     private void handleSaveBinaryButtonAction() {
-
+        bookSet = new TreeSet<>(bookList);
+        BinarySerializer.binarySerialize(bookSet, binaryFile);
     }
 
     @FXML
-    private void handleLoadBinaryButtonAction() {
-
+    private void handleLoadBinaryButtonAction() throws ClassNotFoundException {
+        BinarySerializer.binaryDeserialize(binaryFile);
     }
 
 }

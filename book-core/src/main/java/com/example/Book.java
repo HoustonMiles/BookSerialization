@@ -21,7 +21,7 @@ public class Book implements Serializable, Comparable<Book> {
     }
 
     // Getters
-    public String getCreator() {
+    public String getAuthor() {
         return this.author;
     }
 
@@ -29,7 +29,7 @@ public class Book implements Serializable, Comparable<Book> {
         return this.title;
     }
 
-    public int getYearPublished() {
+    public int getYear() {
         return this.yearPublished;
     }
 
