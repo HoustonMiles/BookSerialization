@@ -8,8 +8,10 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Window;
 
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 import java.util.TreeSet;
@@ -43,6 +45,10 @@ public class MainAppController {
     String csvFile = "book.csv";
     String xmlFile = "book.xml";
     String binaryFile = "book.bin";
+    File downloadedCSVFile;
+    File downloadedXMLFile;
+    File downloadedBinaryFile;
+    private Window primaryStage;
 
     @FXML
     private void initialize() {
@@ -113,8 +119,13 @@ public class MainAppController {
     @FXML
     private void handleSaveCSVButtonAction() {
         try {
+            DirectoryChooser dirChooser = new DirectoryChooser();
+            dirChooser.setTitle("Select a folder");
+            File selectedDir = dirChooser.showDialog(primaryStage);
+            downloadedCSVFile = new File(selectedDir.getAbsolutePath() + "/" + csvFile);
             TreeSet<Book> bookSet = new TreeSet<>(bookList);
-            BookUtils.serializeToCSV(bookSet, csvFile);
+            BookUtils.serializeToCSV(bookSet, downloadedCSVFile);
+            bookList.clear();
             statusLabel.setText("CSV serialized!");
         } catch (IOException e) {
             statusLabel.setText("Error saving to CSV: " + e.getMessage());
@@ -125,8 +136,7 @@ public class MainAppController {
     @FXML
     private void handleLoadCSVButtonAction() throws IOException {
         try {
-            Set<Book> deserializedCSVToBooks = BookUtils.deserializeFromCSV(csvFile);
-            bookList.clear();
+            Set<Book> deserializedCSVToBooks = BookUtils.deserializeFromCSV(downloadedCSVFile);
             bookList.addAll(deserializedCSVToBooks);
             statusLabel.setText("CSV deserialized!");
         } catch (IOException e) {
@@ -138,8 +148,13 @@ public class MainAppController {
     @FXML
     private void handleSaveXMLButtonAction() throws IOException {
         try {
+            DirectoryChooser dirChooser = new DirectoryChooser();
+            dirChooser.setTitle("Select a folder");
+            File selectedDir = dirChooser.showDialog(primaryStage);
+            downloadedXMLFile = new File(selectedDir.getAbsolutePath() + "/" + xmlFile);
             TreeSet<Book> bookSet = new TreeSet<>(bookList);
-            BookUtils.serializeToXML(bookSet, xmlFile);
+            BookUtils.serializeToXML(bookSet, downloadedXMLFile);
+            bookList.clear();
             statusLabel.setText("XML serialized!");
         } catch (IOException e) {
             statusLabel.setText("Error saving to XML: " + e.getMessage());
@@ -150,8 +165,7 @@ public class MainAppController {
     @FXML
     private void handleLoadXMLButtonAction() throws IOException {
         try {
-            Set<Book> deserializedXMLToBooks = BookUtils.deserializeFromXML(xmlFile);
-            bookList.clear();
+            Set<Book> deserializedXMLToBooks = BookUtils.deserializeFromXML(downloadedXMLFile);
             bookList.addAll(deserializedXMLToBooks);
             statusLabel.setText("XML deserialized!");
         } catch (IOException e) {
@@ -163,8 +177,13 @@ public class MainAppController {
     @FXML
     private void handleSaveBinaryButtonAction() {
         try {
+            DirectoryChooser dirChooser = new DirectoryChooser();
+            dirChooser.setTitle("Select a folder");
+            File selectedDir = dirChooser.showDialog(primaryStage);
+            downloadedBinaryFile = new File(selectedDir.getAbsolutePath() + "/" + binaryFile);
             TreeSet<Book> bookSet = new TreeSet<>(bookList);
-            BinarySerializer.binarySerialize(bookSet, binaryFile);
+            BinarySerializer.binarySerialize(bookSet, downloadedBinaryFile);
+            bookList.clear();
             statusLabel.setText("Binary serialized!");
         } catch (Exception e) {
             statusLabel.setText("Error binary serialization: " + e.getMessage());
@@ -175,9 +194,8 @@ public class MainAppController {
     @FXML
     private void handleLoadBinaryButtonAction() throws ClassNotFoundException {
         try {
-            Set<Book> loadedBooks = (Set<Book>) BinarySerializer.binaryDeserialize(binaryFile);
+            Set<Book> loadedBooks = (Set<Book>) BinarySerializer.binaryDeserialize(downloadedBinaryFile);
             if (loadedBooks != null) {
-                bookList.clear();
                 bookList.addAll(loadedBooks);
                 statusLabel.setText("Binary deserialized!");
             } else {

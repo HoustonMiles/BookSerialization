@@ -1,6 +1,7 @@
 package com.example;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,7 +17,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 
 public class BookUtils {
-    public static void serializeToCSV(Set<Book> books, String filename) throws IOException {
+    public static void serializeToCSV(Set<Book> books, File filename) throws IOException {
         List<String> lines = new ArrayList<>();
         lines.add("Title,Author,YearPublished,ISBN"); // CSV header
 
@@ -25,16 +26,16 @@ public class BookUtils {
             lines.add(line);
         }
 
-        Path path = Paths.get("..", "logs", filename);
-        Files.write(path, lines, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        //Path path = Paths.get("..", "logs", filename);
+        Files.write(filename.toPath(), lines, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         System.out.println("Library saved to CSV: " + filename);
     }
 
-    public static Set<Book> deserializeFromCSV(String filename) throws IOException {
+    public static Set<Book> deserializeFromCSV(File filename) throws IOException {
         Set<Book> books = new TreeSet<>();
 
         try {
-            List<String> lines = Files.readAllLines(Path.of("..", "logs", filename));
+            List<String> lines = Files.readAllLines(filename.toPath());
             for (int i = 1; i < lines.size(); i++) { // Skip header
                 String[] parts = lines.get(i).split(",");
                 if (parts.length >= 4) {
@@ -54,7 +55,7 @@ public class BookUtils {
         return books;
     }
 
-    public static void serializeToXML(Set<Book> books, String filename) throws IOException {
+    public static void serializeToXML(Set<Book> books, File filename) throws IOException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = null;
         try {
@@ -85,8 +86,8 @@ public class BookUtils {
             throw new RuntimeException(e);
         }
         DOMSource source = new DOMSource(doc);
-        Path path = Paths.get("..", "logs", filename);
-        StreamResult result = new StreamResult(path.toFile());
+        //Path path = Paths.get("..", "logs", filename);
+        StreamResult result = new StreamResult(filename);
         try {
             transformer.transform(source, result);
             System.out.println("Library saved to XML: " + filename);
@@ -95,7 +96,7 @@ public class BookUtils {
         }
     }
 
-    public static Set<Book> deserializeFromXML(String filename) throws IOException {
+    public static Set<Book> deserializeFromXML(File filename) throws IOException {
         Set<Book> books = new TreeSet<>();
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -107,8 +108,8 @@ public class BookUtils {
         }
         Document doc;
         try {
-            Path path = Paths.get("..", "logs", filename);
-            doc = builder.parse(path.toFile());
+            //Path path = Paths.get("..", "logs", filename);
+            doc = builder.parse(filename);
         } catch (SAXException e) {
             throw new RuntimeException(e);
         }

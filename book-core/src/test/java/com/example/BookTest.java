@@ -4,6 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Set;
@@ -29,9 +30,9 @@ public class BookTest {
 
     @Test
     public void serializeBook() throws IOException, ClassNotFoundException {
-        String csvFile = "book.csv";
-        String xmlFile = "book.xml";
-        String binaryFile = "book.bin";
+        File csvFile = new File("../logs/book.csv").getAbsoluteFile();
+        File xmlFile = new File("../logs/book.xml");
+        File binaryFile = new File("../logs/book.bin");
 
         // Serialize the original books to CSV
         BookUtils.serializeToCSV(originalBooks, csvFile);
