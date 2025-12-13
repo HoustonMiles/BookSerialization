@@ -29,6 +29,7 @@ public class MainAppController {
 
     @FXML private Button addButton;
     @FXML private Button removeButton;
+    @FXML private Button editButton;
     @FXML private Button saveCSVButton;
     @FXML private Button loadCSVButton;
     @FXML private Button saveXMLButton;
@@ -90,6 +91,22 @@ public class MainAppController {
         } else {
             bookList.remove(selectedBook);
             statusLabel.setText("Book removed!");
+        }
+    }
+
+    @FXML
+    private void handleEditButtonAction() {
+        Book selectedBook = bookTable.getSelectionModel().getSelectedItem();
+        if (selectedBook == null) {
+            statusLabel.setText("No book selected");
+        } else {
+            bookTable.getSelectionModel().select(selectedBook);
+            bookList.remove(selectedBook);
+            titleField.setText(selectedBook.getTitle());
+            authorField.setText(selectedBook.getAuthor());
+            yearField.setText(String.valueOf(selectedBook.getYear()));
+            isbnField.setText(selectedBook.getIsbn());
+            statusLabel.setText("Book being edited!");
         }
     }
 

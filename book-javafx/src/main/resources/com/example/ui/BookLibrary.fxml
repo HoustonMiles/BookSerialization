@@ -65,8 +65,9 @@
             </GridPane>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
                <children>
-                  <Button id="addButton" fx:id="addButton" mnemonicParsing="false" onAction="#handleAddButtonAction" text="Add Button" />
-                  <Button id="removeButton" fx:id="removeButton" mnemonicParsing="false" onAction="#handleRemoveButtonAction" text="Remove Selected" />
+                  <Button id="addButton" fx:id="addButton" mnemonicParsing="false" onAction="#handleAddButtonAction" text="Add Book" />
+                  <Button id="removeButton" fx:id="removeButton" mnemonicParsing="false" onAction="#handleRemoveButtonAction" text="Remove Book" />
+                  <Button fx:id="editButton" mnemonicParsing="false" onAction="#handleEditButtonAction" text="Edit Book" />
                </children>
             </HBox>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
