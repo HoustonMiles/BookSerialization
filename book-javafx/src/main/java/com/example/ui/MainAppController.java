@@ -3,18 +3,21 @@ package com.example.ui;
 import com.example.Book;
 import com.example.BookUtils;
 import com.example.BinarySerializer;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 import java.util.TreeSet;
+
+import static jdk.jfr.consumer.EventStream.openFile;
 
 public class MainAppController {
     @FXML private TableView<Book> bookTable;
@@ -32,22 +35,13 @@ public class MainAppController {
     @FXML private Button addButton;
     @FXML private Button removeButton;
     @FXML private Button editButton;
-    @FXML private Button saveCSVButton;
-    @FXML private Button loadCSVButton;
-    @FXML private Button saveXMLButton;
-    @FXML private Button loadXMLButton;
-    @FXML private Button saveBinaryButton;
-    @FXML private Button loadBinaryButton;
+    @FXML private Button saveFileButton;
+    @FXML private Button loadFileButton;
 
     @FXML private Label statusLabel;
 
     private ObservableList<Book> bookList = FXCollections.observableArrayList();
-    String csvFile = "book.csv";
-    String xmlFile = "book.xml";
-    String binaryFile = "book.bin";
-    File downloadedCSVFile;
-    File downloadedXMLFile;
-    File downloadedBinaryFile;
+
     private Window primaryStage;
 
     @FXML
@@ -70,30 +64,57 @@ public class MainAppController {
             Integer year = Integer.parseInt(yearField.getText());
             String isbn = isbnField.getText().trim();
 
-            if (title.isEmpty() || author.isEmpty() || year == 0 || isbn.isEmpty()) {
+            if (title.isEmpty() || author.isEmpty() || year == null || isbn.isEmpty()) {
                 statusLabel.setText("Please fill all the fields");
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Success");
+                alert.setHeaderText(null);
+                alert.setContentText("Please fill all the fields");
+                alert.showAndWait();
                 return;
             }
 
             Book newBook = new Book(title, author, year, isbn);
-            bookList.add(newBook);
+            if (!duplicateBook(newBook)) {
+                bookList.add(newBook);
 
-            titleField.clear();
-            authorField.clear();
-            yearField.clear();
-            isbnField.clear();
+                titleField.clear();
+                authorField.clear();
+                yearField.clear();
+                isbnField.clear();
 
-            statusLabel.setText("Book added!");
+                statusLabel.setText("Book added");
+            } else {
+                statusLabel.setText("Book already exists");
+            }
         } catch (NumberFormatException e) {
-            statusLabel.setText("Error: Year must be a number");
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Failure");
+            alert.setHeaderText(null);
+            alert.setContentText("Please fill all the fields");
+            alert.showAndWait();
+            e.printStackTrace();
         }
+    }
+
+    private boolean duplicateBook(Book book) {
+        for (int i = 0; i < bookList.size(); i++) {
+            if (book.equals(bookList.get(i))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @FXML
     private void handleRemoveButtonAction() {
         Book selectedBook = bookTable.getSelectionModel().getSelectedItem();
         if (selectedBook == null) {
-            statusLabel.setText("No book selected");
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Failure");
+            alert.setHeaderText(null);
+            alert.setContentText("Please select a book");
+            alert.showAndWait();
         } else {
             bookList.remove(selectedBook);
             statusLabel.setText("Book removed!");
@@ -104,105 +125,95 @@ public class MainAppController {
     private void handleEditButtonAction() {
         Book selectedBook = bookTable.getSelectionModel().getSelectedItem();
         if (selectedBook == null) {
-            statusLabel.setText("No book selected");
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Failure");
+            alert.setHeaderText(null);
+            alert.setContentText("Please select a book");
+            alert.showAndWait();
         } else {
             bookTable.getSelectionModel().select(selectedBook);
-            bookList.remove(selectedBook);
+
             titleField.setText(selectedBook.getTitle());
             authorField.setText(selectedBook.getAuthor());
             yearField.setText(String.valueOf(selectedBook.getYear()));
             isbnField.setText(selectedBook.getIsbn());
+
             statusLabel.setText("Book being edited!");
         }
     }
 
     @FXML
-    private void handleSaveCSVButtonAction() {
+    private void handleSaveButtonAction() {
         try {
-            DirectoryChooser dirChooser = new DirectoryChooser();
-            dirChooser.setTitle("Select a folder");
-            File selectedDir = dirChooser.showDialog(primaryStage);
-            downloadedCSVFile = new File(selectedDir.getAbsolutePath() + "/" + csvFile);
-            TreeSet<Book> bookSet = new TreeSet<>(bookList);
-            BookUtils.serializeToCSV(bookSet, downloadedCSVFile);
-            bookList.clear();
-            statusLabel.setText("CSV serialized!");
-        } catch (IOException e) {
-            statusLabel.setText("Error saving to CSV: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    private void handleLoadCSVButtonAction() throws IOException {
-        try {
-            Set<Book> deserializedCSVToBooks = BookUtils.deserializeFromCSV(downloadedCSVFile);
-            bookList.addAll(deserializedCSVToBooks);
-            statusLabel.setText("CSV deserialized!");
-        } catch (IOException e) {
-            statusLabel.setText("Error loading from CSV: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    private void handleSaveXMLButtonAction() throws IOException {
-        try {
-            DirectoryChooser dirChooser = new DirectoryChooser();
-            dirChooser.setTitle("Select a folder");
-            File selectedDir = dirChooser.showDialog(primaryStage);
-            downloadedXMLFile = new File(selectedDir.getAbsolutePath() + "/" + xmlFile);
-            TreeSet<Book> bookSet = new TreeSet<>(bookList);
-            BookUtils.serializeToXML(bookSet, downloadedXMLFile);
-            bookList.clear();
-            statusLabel.setText("XML serialized!");
-        } catch (IOException e) {
-            statusLabel.setText("Error saving to XML: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    private void handleLoadXMLButtonAction() throws IOException {
-        try {
-            Set<Book> deserializedXMLToBooks = BookUtils.deserializeFromXML(downloadedXMLFile);
-            bookList.addAll(deserializedXMLToBooks);
-            statusLabel.setText("XML deserialized!");
-        } catch (IOException e) {
-            statusLabel.setText("Error loading from XML: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    private void handleSaveBinaryButtonAction() {
-        try {
-            DirectoryChooser dirChooser = new DirectoryChooser();
-            dirChooser.setTitle("Select a folder");
-            File selectedDir = dirChooser.showDialog(primaryStage);
-            downloadedBinaryFile = new File(selectedDir.getAbsolutePath() + "/" + binaryFile);
-            TreeSet<Book> bookSet = new TreeSet<>(bookList);
-            BinarySerializer.binarySerialize(bookSet, downloadedBinaryFile);
-            bookList.clear();
-            statusLabel.setText("Binary serialized!");
-        } catch (Exception e) {
-            statusLabel.setText("Error binary serialization: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    private void handleLoadBinaryButtonAction() throws ClassNotFoundException {
-        try {
-            Set<Book> loadedBooks = (Set<Book>) BinarySerializer.binaryDeserialize(downloadedBinaryFile);
-            if (loadedBooks != null) {
-                bookList.addAll(loadedBooks);
-                statusLabel.setText("Binary deserialized!");
-            } else {
-                statusLabel.setText("Error binary deserialization!");
+            if (bookList.isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Failure");
+                alert.setHeaderText(null);
+                alert.setContentText("Table is empty");
+                alert.showAndWait();
+                return;
             }
-        } catch (ClassNotFoundException e) {
-            statusLabel.setText("Error binary deserialization: " + e.getMessage());
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save Serialization File");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Serialization Files", "*.xml", "*.csv", "*.bin"));
+            fileChooser.setInitialFileName("serializedBooks");
+            File selectedFile = fileChooser.showSaveDialog(primaryStage);
+            TreeSet<Book> bookSet = new TreeSet<>(bookList);
+            if (selectedFile != null) {
+                if (selectedFile.getName().endsWith(".csv")) {
+                    BookUtils.serializeToCSV(bookSet, selectedFile);
+                } else if (selectedFile.getName().endsWith(".xml")) {
+                    BookUtils.serializeToXML(bookSet, selectedFile);
+                } else if (selectedFile.getName().endsWith(".bin")) {
+                    BinarySerializer.binarySerialize(bookSet, selectedFile);
+                } else {
+
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleLoadButtonAction() {
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Open Serialization File");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Serialization Files", "*.xml", "*.csv", "*.bin"));
+            File selectedFile = fileChooser.showOpenDialog(primaryStage);
+            Set<Book> deserializedToBooks = null;
+            if (selectedFile != null) {
+                if (selectedFile.getName().endsWith(".csv")) {
+                    deserializedToBooks = BookUtils.deserializeFromCSV(selectedFile);
+
+                } else if (selectedFile.getName().endsWith(".xml")) {
+                    deserializedToBooks = BookUtils.deserializeFromXML(selectedFile);
+
+                } else if (selectedFile.getName().endsWith(".bin")) {
+                    deserializedToBooks = (Set<Book>) BinarySerializer.binaryDeserialize(selectedFile);
+
+                } else {
+
+                }
+            }
+            if (deserializedToBooks.isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Failure");
+                alert.setHeaderText(null);
+                alert.setContentText("File is empty");
+                alert.showAndWait();
+                return;
+            }
+            for (Book book : deserializedToBooks) {
+                if (!duplicateBook(book)) {
+                    bookList.add(book);
+                } else {
+                    statusLabel.setText("Book already exists");
+                }
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            statusLabel.setText("Error loading: " + e.getMessage());
             e.printStackTrace();
         }
     }
