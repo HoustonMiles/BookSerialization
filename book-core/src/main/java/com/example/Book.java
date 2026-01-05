@@ -2,6 +2,7 @@ package com.example;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Objects;
 
 public class Book implements Serializable, Comparable<Book> {
@@ -10,13 +11,13 @@ public class Book implements Serializable, Comparable<Book> {
 
     private String author;
     private String title;
-    private int yearPublished;
+    private int year;
     private String isbn;
 
-    public Book(String title, String author, int yearPublished, String isbn) {
+    public Book(String title, String author, int year, String isbn) {
         this.author = author;
         this.title = title;
-        this.yearPublished = yearPublished;
+        this.year = year;
         this.isbn = isbn;
     }
 
@@ -30,7 +31,7 @@ public class Book implements Serializable, Comparable<Book> {
     }
 
     public int getYear() {
-        return this.yearPublished;
+        return this.year;
     }
 
     public String getIsbn() {
@@ -38,7 +39,7 @@ public class Book implements Serializable, Comparable<Book> {
     }
 
     // Setters
-    public void setCreator(String author) {
+    public void setAuthor(String author) {
         this.author = author;
     }
 
@@ -46,8 +47,8 @@ public class Book implements Serializable, Comparable<Book> {
         this.title = title;
     }
 
-    public void setYearPublished(int yearPublished) {
-        this.yearPublished = yearPublished;
+    public void setYear(int year) {
+        this.year = year;
     }
 
     public void setIsbn(String isbn) {
@@ -55,7 +56,7 @@ public class Book implements Serializable, Comparable<Book> {
     }
 
     public String toString() {
-        String output = this.author + ",\t" + this.title + ",\t" + this.yearPublished + ",\t" + this.isbn;
+        String output = this.author + ",\t" + this.title + ",\t" + this.year + ",\t" + this.isbn;
         return output;
     }
 
@@ -66,18 +67,18 @@ public class Book implements Serializable, Comparable<Book> {
         Book book = (Book) o;
         return Objects.equals(title, book.title) &&
                 Objects.equals(author, book.author) &&
-                yearPublished == book.yearPublished &&
+                year == book.year &&
                 Objects.equals(isbn, book.isbn);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(title, author, yearPublished, isbn);
+        return Objects.hash(title, author, year, isbn);
     }
 
     @Override
     public int compareTo(Book o) {
-        int result = Integer.compare(this.yearPublished, o.yearPublished);
+        int result = Integer.compare(this.year, o.year);
         if (result != 0) return result;
 
         result = this.title.compareTo(o.title);
@@ -88,4 +89,9 @@ public class Book implements Serializable, Comparable<Book> {
 
         return this.isbn.compareTo(o.isbn);
     }
+
+    public static final Comparator<Book> BY_AUTHOR = Comparator.comparing(Book::getAuthor);
+    public static final Comparator<Book> BY_TITLE = Comparator.comparing(Book::getTitle);
+    public static final Comparator<Book> BY_YEAR = Comparator.comparing(Book::getYear);
+    public static final Comparator<Book> BY_ISBN = Comparator.comparing(Book::getIsbn);
 }

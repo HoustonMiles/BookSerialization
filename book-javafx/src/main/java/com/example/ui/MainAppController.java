@@ -6,6 +6,7 @@ import com.example.BinarySerializer;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -37,10 +38,12 @@ public class MainAppController {
     @FXML private Button editButton;
     @FXML private Button saveFileButton;
     @FXML private Button loadFileButton;
+    @FXML private MenuButton sortListButton;
 
     @FXML private Label statusLabel;
 
     private ObservableList<Book> bookList = FXCollections.observableArrayList();
+    private SortedList<Book> sortedList = new SortedList<>(bookList);
 
     private Window primaryStage;
 
@@ -51,7 +54,19 @@ public class MainAppController {
         yearColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("year"));
         isbnColumn.setCellValueFactory(new PropertyValueFactory<Book, String>("isbn"));
 
-        bookTable.setItems(bookList);
+        bookTable.setItems(sortedList);
+
+        MenuItem authorItem = new MenuItem("Author Ordered");
+        MenuItem titleItem = new MenuItem("Title Ordered");
+        MenuItem yearItem = new MenuItem("Year Ordered");
+        MenuItem isbnItem = new MenuItem("ISBN Ordered");
+
+        authorItem.setOnAction(e -> sortedList.setComparator(Book.BY_AUTHOR));
+        titleItem.setOnAction(e -> sortedList.setComparator(Book.BY_TITLE));
+        yearItem.setOnAction(e -> sortedList.setComparator(Book.BY_YEAR));
+        isbnItem.setOnAction(e -> sortedList.setComparator(Book.BY_ISBN));
+
+        sortListButton.getItems().addAll(authorItem, titleItem, yearItem, isbnItem);
 
         statusLabel.setText("Ready");
     }
