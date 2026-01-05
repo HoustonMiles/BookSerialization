@@ -7,7 +7,7 @@ import java.util.Objects;
 
 public class Book implements Serializable, Comparable<Book> {
     @Serial
-    long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     private String author;
     private String title;

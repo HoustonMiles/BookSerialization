@@ -1,0 +1,138 @@
+.root {
+    -fx-background-color: #000000;
+    -fx-background-image: url("background.jpg");
+    -fx-background-size: cover;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 14px;
+}
+
+/* Text elements - multiple approaches */
+Text {
+    -fx-fill: #F4E4C1;
+}
+
+.text {
+    -fx-fill: #F4E4C1;
+}
+
+/* TableView */
+.table-view {
+    -fx-background-color: rgba(20, 15, 10, 0.9);
+    -fx-border-color: #D4AF37;
+    -fx-border-width: 2px;
+}
+
+.table-view .column-header {
+    -fx-background-color: rgba(20, 15, 10, 0.95);
+    -fx-text-fill: #F4E4C1;
+    -fx-border-color: #D4AF37;
+}
+
+.table-view .table-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #F4E4C1;
+}
+
+.table-row-cell {
+    -fx-background-color: transparent;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #8B4513;
+    -fx-text-fill: #F4E4C1;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #654321;
+}
+
+/* TextField */
+.text-field {
+    -fx-background-color: rgba(40, 30, 20, 0.95);
+    -fx-text-fill: #F4E4C1;
+    -fx-border-color: #D4AF37;
+    -fx-border-width: 2px;
+    -fx-prompt-text-fill: #B8A070;
+}
+
+.text-field:focused {
+    -fx-background-color: rgba(50, 35, 20, 1.0);
+    -fx-border-color: #FFD700;
+}
+
+/* Buttons */
+.button {
+    -fx-background-color: rgba(40, 30, 20, 0.95);
+    -fx-text-fill: #F4E4C1;
+    -fx-border-color: #D4AF37;
+    -fx-border-width: 2px;
+    -fx-font-weight: bold;
+}
+
+.button:hover {
+    -fx-background-color: #654321;
+}
+
+.button:pressed {
+    -fx-background-color: #8B4513;
+    -fx-text-fill: #F4E4C1;
+}
+
+/* MenuButton */
+.menu-button {
+    -fx-background-color: rgba(40, 30, 20, 0.95);
+    -fx-text-fill: #F4E4C1;
+    -fx-border-color: #D4AF37;
+    -fx-border-width: 2px;
+    -fx-font-weight: bold;
+}
+
+/* Menu Items */
+.context-menu {
+    -fx-background-color: rgba(30, 20, 10, 0.98);
+    -fx-border-color: #D4AF37;
+    -fx-border-width: 2px;
+}
+
+.menu-item {
+    -fx-background-color: transparent;
+    -fx-text-fill: #F4E4C1;
+}
+
+.menu-item:hover {
+    -fx-background-color: #8B4513;
+    -fx-text-fill: #F4E4C1;
+}
+
+/* Labels */
+.label {
+    -fx-text-fill: #F4E4C1;
+    -fx-font-weight: bold;
+}
+
+/* Status Label specific - smaller now */
+#statusLabel {
+    -fx-background-color: rgba(40, 30, 20, 0.9);
+    -fx-border-color: #D4AF37;
+    -fx-border-width: 1px;
+    -fx-padding: 4px 8px;
+    -fx-text-fill: #FFD700;
+    -fx-font-size: 12px;
+}
+
+/* Dialogs */
+.dialog-pane {
+    -fx-background-color: rgba(20, 15, 10, 0.95);
+    -fx-border-color: #D4AF37;
+    -fx-border-width: 2px;
+}
+
+.dialog-pane .content {
+    -fx-text-fill: #F4E4C1;
+}
+
+.dialog-pane .header-panel {
+    -fx-background-color: rgba(40, 30, 20, 0.95);
+}

@@ -207,6 +207,9 @@ public class MainAppController {
 
                 } else if (selectedFile.getName().endsWith(".bin")) {
                     deserializedToBooks = (Set<Book>) BinarySerializer.binaryDeserialize(selectedFile);
+                    if (deserializedToBooks == null) {
+                        deserializedToBooks = new TreeSet<>();
+                    }
 
                 } else {
 

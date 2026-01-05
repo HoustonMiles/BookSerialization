@@ -59,7 +59,7 @@
                </children>
             </HBox>
             <MenuButton fx:id="sortListButton" mnemonicParsing="false" onAction="#initialize" text="Sort List" />
-            <TableView id="bookTable" fx:id="bookTable" maxHeight="200.0" maxWidth="600.0" prefHeight="200.0" prefWidth="200.0">
+            <TableView id="bookTable" fx:id="bookTable" maxHeight="200.0" maxWidth="600.0" prefHeight="200.0" prefWidth="200.0" styleClass="dos-table">
               <columns>
                 <TableColumn id="titleColumn" fx:id="titleColumn" prefWidth="200.0" text="Title" />
                 <TableColumn id="authorColumn" fx:id="authorColumn" prefWidth="150.0" text="Author" />

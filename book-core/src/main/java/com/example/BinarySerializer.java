@@ -25,14 +25,15 @@ public class BinarySerializer {
     }
 
     public static Object binaryDeserialize(File filename) throws ClassNotFoundException {
-        try {
-            FileInputStream fis = new FileInputStream(filename);
-            ObjectInputStream ois = new ObjectInputStream(fis);
+        try (FileInputStream fis = new FileInputStream(filename);
+             ObjectInputStream ois = new ObjectInputStream(fis)) {
             System.out.println("Library loaded from binary file: " + filename);
             return ois.readObject();
         } catch (FileNotFoundException e) {
+            System.err.println("File not found: " + filename);
             e.printStackTrace();
         } catch (IOException e) {
+            System.err.println("IO Exception during deserialization: " + e.getMessage());
             e.printStackTrace();
         }
         return null;

@@ -11,6 +11,7 @@ public class MainApp extends Application {
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("BookLibrary.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
+        scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
 
         primaryStage.setTitle("Book Library Manager");
         primaryStage.setScene(scene);
