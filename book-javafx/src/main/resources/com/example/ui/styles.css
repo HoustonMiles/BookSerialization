@@ -8,7 +8,7 @@
     -fx-font-size: 14px;
 }
 
-/* Text elements - multiple approaches */
+/* Text elements - no borders */
 Text {
     -fx-fill: #F4E4C1;
 }
@@ -25,7 +25,7 @@ Text {
 }
 
 .table-view .column-header {
-    -fx-background-color: rgba(20, 15, 10, 0.95);
+    -fx-background-color: rgba(20, 15, 10, 0.9);
     -fx-text-fill: #F4E4C1;
     -fx-border-color: #D4AF37;
 }
@@ -73,37 +73,59 @@ Text {
 .text-area:focused {
     -fx-control-inner-background: rgba(50, 35, 20, 1.0);
     -fx-border-color: #FFD700;
+    -fx-border-width: 2px;
 }
 
 .text-area .content {
     -fx-background-color: rgba(40, 30, 20, 0.95);
+    -fx-border-color: #D4AF37;
+    -fx-border-width: 2px;
 }
 
 /* Buttons */
 .button {
-    -fx-background-color: rgba(40, 30, 20, 0.95);
+    -fx-background-color: rgba(60, 40, 20, 0.95);
     -fx-text-fill: #F4E4C1;
-    -fx-border-color: #D4AF37;
-    -fx-border-width: 2px;
+    -fx-border-color: #B8860B;
+    -fx-border-width: 3px;
     -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    -fx-padding: 8px 16px;
 }
 
 .button:hover {
-    -fx-background-color: #654321;
+    -fx-background-color: #8B4513;
+    -fx-border-color: #FFD700;
 }
 
 .button:pressed {
-    -fx-background-color: #8B4513;
-    -fx-text-fill: #F4E4C1;
+    -fx-background-color: #654321;
+    -fx-text-fill: #FFD700;
+    -fx-border-color: #DAA520;
 }
 
-/* MenuButton */
+/* MenuButton - ensure consistent sizing */
 .menu-button {
-    -fx-background-color: rgba(40, 30, 20, 0.95);
+    -fx-background-color: rgba(60, 40, 20, 0.95);
     -fx-text-fill: #F4E4C1;
-    -fx-border-color: #D4AF37;
-    -fx-border-width: 2px;
+    -fx-border-color: #B8860B;
+    -fx-border-width: 3px;
     -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    -fx-padding: 8px 16px;
+}
+
+.menu-button:hover {
+    -fx-background-color: #8B4513;
+    -fx-border-color: #FFD700;
+}
+
+.menu-button .label {
+    -fx-padding: 0;
+    -fx-border-width: 0;
+    -fx-background-color: transparent;
 }
 
 /* Menu Items */
@@ -111,6 +133,8 @@ Text {
     -fx-background-color: rgba(30, 20, 10, 0.98);
     -fx-border-color: #D4AF37;
     -fx-border-width: 2px;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
 }
 
 .menu-item {
@@ -127,9 +151,12 @@ Text {
 .label {
     -fx-text-fill: #F4E4C1;
     -fx-font-weight: bold;
+    -fx-border-color: #D4AF37;
+    -fx-border-width: 2px;
+    -fx-background-color: rgba(40, 30, 20, 0.7);
+    -fx-padding: 2px 4px;
 }
 
-/* Status Label specific - smaller now */
 #statusLabel {
     -fx-background-color: rgba(40, 30, 20, 0.9);
     -fx-border-color: #D4AF37;

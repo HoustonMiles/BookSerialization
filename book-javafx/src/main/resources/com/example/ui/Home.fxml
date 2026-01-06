@@ -2,17 +2,8 @@
 
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
 
-<BorderPane fx:id="borderPane" prefHeight="550.0" prefWidth="700.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ui.HomeController">
-    <top>
-        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Book Library Manager" textAlignment="RIGHT" BorderPane.alignment="CENTER">
-            <font>
-                <Font size="24.0" />
-            </font>
-        </Text>
-    </top>
+<BorderPane fx:id="borderPane" prefHeight="550.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ui.HomeController">
    <center>
       <TextArea prefHeight="200.0" prefWidth="200.0" text="Hello, this is an app to help serialize and deserialize your library of books.&#10;&#10;You can take multiple files of CSV, XML, and Binary and combine them in a sorted order.&#10;&#10;You can add new books using the &quot;Books&quot; tab.&#10;&#10;You can sort or edit your books in your library.&#10;&#10;Your library is only saved for the instance that the app is open." BorderPane.alignment="CENTER" />
    </center>

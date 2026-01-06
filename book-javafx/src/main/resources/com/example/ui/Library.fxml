@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" maxHeight="497.0" minHeight="222.0" prefHeight="497.0" prefWidth="680.0" spacing="10.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ui.LibraryController">
+<VBox alignment="CENTER" maxHeight="497.0" minHeight="222.0" prefHeight="497.0" prefWidth="680.0" spacing="10.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ui.LibraryController">
    <children>
       <Label id="statusLabel" fx:id="statusLabel" text="Ready" />
       <HBox alignment="TOP_CENTER" prefHeight="27.0" prefWidth="695.0" spacing="10.0">
@@ -18,12 +18,12 @@
             <MenuButton fx:id="sortListButton" mnemonicParsing="false" onAction="#initialize" text="Sort List" />
          </children>
       </HBox>
-      <TableView id="bookTable" fx:id="bookTable" maxHeight="431.0" maxWidth="600.0" prefHeight="431.0" prefWidth="600.0" styleClass="dos-table">
+      <TableView id="bookTable" fx:id="bookTable" maxHeight="431.0" maxWidth="520.0" prefHeight="431.0" prefWidth="520.0" styleClass="dos-table">
          <columns>
-            <TableColumn id="titleColumn" fx:id="titleColumn" prefWidth="200.0" text="Title" />
-            <TableColumn id="authorColumn" fx:id="authorColumn" prefWidth="150.0" text="Author" />
-            <TableColumn id="yearColumn" fx:id="yearColumn" prefWidth="100.0" text="Year" />
-            <TableColumn id="isbnColumn" fx:id="isbnColumn" prefWidth="150.0" text="ISBN" />
+            <TableColumn id="titleColumn" fx:id="titleColumn" prefWidth="141.19998931884766" text="Title" />
+            <TableColumn id="authorColumn" fx:id="authorColumn" prefWidth="131.5999755859375" text="Author" />
+            <TableColumn id="yearColumn" fx:id="yearColumn" prefWidth="95.20001220703125" text="Year" />
+            <TableColumn id="isbnColumn" fx:id="isbnColumn" prefWidth="145.19998168945312" text="ISBN" />
          </columns>
       </TableView>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
