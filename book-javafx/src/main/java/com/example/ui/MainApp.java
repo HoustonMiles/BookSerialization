@@ -9,8 +9,8 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("BookLibrary.fxml"));
-        Scene scene = new Scene(fxmlLoader.load());
+        FXMLLoader homeLoader = new FXMLLoader(getClass().getResource("Main.fxml"));
+        Scene scene = new Scene(homeLoader.load());
         scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
 
         primaryStage.setTitle("Book Library Manager");

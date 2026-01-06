@@ -62,6 +62,23 @@ Text {
     -fx-border-color: #FFD700;
 }
 
+/* TextArea */
+.text-area {
+    -fx-control-inner-background: rgba(40, 30, 20, 0.95);
+    -fx-text-fill: #F4E4C1;
+    -fx-border-color: #D4AF37;
+    -fx-border-width: 2px;
+}
+
+.text-area:focused {
+    -fx-control-inner-background: rgba(50, 35, 20, 1.0);
+    -fx-border-color: #FFD700;
+}
+
+.text-area .content {
+    -fx-background-color: rgba(40, 30, 20, 0.95);
+}
+
 /* Buttons */
 .button {
     -fx-background-color: rgba(40, 30, 20, 0.95);
