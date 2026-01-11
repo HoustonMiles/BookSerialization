@@ -5,12 +5,15 @@ import com.example.BookUtils;
 import com.example.BinarySerializer;
 
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
+import javafx.util.converter.IntegerStringConverter;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,40 +33,110 @@ public class LibraryController {
     @FXML private TextField yearField;
     @FXML private TextField isbnField;
 
+    @FXML private TextField searchField;
+    @FXML private ChoiceBox<String> searchChoiceBox;
+
     @FXML private MenuButton sortListButton;
     @FXML private Label statusLabel;
 
     private ObservableList<Book> bookList;
+    private FilteredList<Book> filteredList;
     private SortedList<Book> sortedList;
 
     private Window primaryStage;
 
     public void setBookList(ObservableList<Book> bookList) {
         this.bookList = bookList;
-        this.sortedList = new SortedList<>(bookList);
+
+        // Create FilteredList first
+        this.filteredList = new FilteredList<>(bookList, p -> true);
+
+        // Then wrap it in SortedList
+        this.sortedList = new SortedList<>(filteredList);
+
         bookTable.setItems(sortedList);
     }
 
     @FXML
     private void initialize() {
-        // Same table and sort setup as BookLibraryController
+        // Make table editable
+        bookTable.setEditable(true);
+
+        // Table column setup with cell factories for editing
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+        titleColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        titleColumn.setOnEditCommit((TableColumn.CellEditEvent<Book, String> t) -> {
+            Book book = t.getTableView().getItems().get(t.getTablePosition().getRow());
+            book.setTitle(t.getNewValue());
+        });
+
         authorColumn.setCellValueFactory(new PropertyValueFactory<>("author"));
+        authorColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        authorColumn.setOnEditCommit((TableColumn.CellEditEvent<Book, String> t) -> {
+            Book book = t.getTableView().getItems().get(t.getTablePosition().getRow());
+            book.setAuthor(t.getNewValue());
+        });
+
+        // For the year column (Integer), you need an IntegerStringConverter
         yearColumn.setCellValueFactory(new PropertyValueFactory<>("year"));
+        yearColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        yearColumn.setOnEditCommit((TableColumn.CellEditEvent<Book, Integer> t) -> {
+            Book book = t.getTableView().getItems().get(t.getTablePosition().getRow());
+            book.setYear(t.getNewValue());
+        });
+
         isbnColumn.setCellValueFactory(new PropertyValueFactory<>("isbn"));
+        isbnColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        isbnColumn.setOnEditCommit((TableColumn.CellEditEvent<Book, String> t) -> {
+            Book book = t.getTableView().getItems().get(t.getTablePosition().getRow());
+            book.setIsbn(t.getNewValue());
+        });
+
 
         MenuItem authorItem = new MenuItem("Author Ordered");
         MenuItem titleItem = new MenuItem("Title Ordered");
         MenuItem yearItem = new MenuItem("Year Ordered");
         MenuItem isbnItem = new MenuItem("ISBN Ordered");
 
+        // Search choice box setup
+        searchChoiceBox.getItems().addAll("Search Author", "Search Title", "Search Year", "Search ISBN");
+        searchChoiceBox.setValue("Search Author");
+
+        searchField.setText("Search Here!");
+
+        // Update to use filteredList field instead of local variable
+        searchField.textProperty().addListener((obs, oldValue, newValue) -> {
+            if (filteredList != null) { // Safety check
+                switch (searchChoiceBox.getValue()) {
+                    case "Search Author":
+                        filteredList.setPredicate(p -> p.getAuthor().toLowerCase().contains(newValue.toLowerCase().trim()));
+                        break;
+                    case "Search Title":
+                        filteredList.setPredicate(p -> p.getTitle().toLowerCase().contains(newValue.toLowerCase().trim()));
+                        break;
+                    case "Search Year":
+                        filteredList.setPredicate(p -> String.valueOf(p.getYear()).contains(newValue.trim()));
+                        break;
+                    case "Search ISBN":
+                        filteredList.setPredicate(p -> p.getIsbn().toLowerCase().contains(newValue.toLowerCase().trim()));
+                        break;
+                }
+            }
+        });
+
+        searchChoiceBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                searchField.setText("");
+            }
+        });
+
+        // Sorting setup
         authorItem.setOnAction(e -> sortedList.setComparator(Book.BY_AUTHOR));
         titleItem.setOnAction(e -> sortedList.setComparator(Book.BY_TITLE));
         yearItem.setOnAction(e -> sortedList.setComparator(Book.BY_YEAR));
         isbnItem.setOnAction(e -> sortedList.setComparator(Book.BY_ISBN));
 
         sortListButton.getItems().addAll(authorItem, titleItem, yearItem, isbnItem);
-
         statusLabel.setText("Ready");
     }
 
@@ -88,27 +161,6 @@ public class LibraryController {
         } else {
             bookList.remove(selectedBook);
             statusLabel.setText("Book removed!");
-        }
-    }
-
-    @FXML
-    private void handleEditButtonAction() {
-        Book selectedBook = bookTable.getSelectionModel().getSelectedItem();
-        if (selectedBook == null) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Failure");
-            alert.setHeaderText(null);
-            alert.setContentText("Please select a book");
-            alert.showAndWait();
-        } else {
-            bookTable.getSelectionModel().select(selectedBook);
-
-            titleField.setText(selectedBook.getTitle());
-            authorField.setText(selectedBook.getAuthor());
-            yearField.setText(String.valueOf(selectedBook.getYear()));
-            isbnField.setText(selectedBook.getIsbn());
-
-            statusLabel.setText("Book being edited!");
         }
     }
 
@@ -190,4 +242,6 @@ public class LibraryController {
             e.printStackTrace();
         }
     }
+
+
 }

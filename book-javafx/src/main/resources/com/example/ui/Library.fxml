@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
@@ -13,9 +15,10 @@
       <Label id="statusLabel" fx:id="statusLabel" text="Ready" />
       <HBox alignment="TOP_CENTER" prefHeight="27.0" prefWidth="695.0" spacing="10.0">
          <children>
-            <Button fx:id="editButton" mnemonicParsing="false" onAction="#handleEditButtonAction" text="Edit Book" />
             <Button id="removeButton" fx:id="removeButton" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#handleRemoveButtonAction" text="Remove Book" />
             <MenuButton fx:id="sortListButton" mnemonicParsing="false" onAction="#initialize" text="Sort List" />
+            <ChoiceBox fx:id="searchChoiceBox" maxWidth="100.0" prefWidth="150.0" />
+            <TextField fx:id="searchField" maxWidth="125.0" />
          </children>
       </HBox>
       <TableView id="bookTable" fx:id="bookTable" maxHeight="431.0" maxWidth="520.0" prefHeight="431.0" prefWidth="520.0" styleClass="dos-table">

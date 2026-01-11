@@ -8,6 +8,14 @@
     -fx-font-size: 14px;
 }
 
+/* Side Panel - Make it narrower */
+#sidePanel {
+    -fx-max-width: 250px;
+    -fx-pref-width: 250px;
+    -fx-spacing: 10px;
+    -fx-padding: 10px;
+}
+
 /* Text elements - no borders */
 Text {
     -fx-fill: #F4E4C1;
@@ -48,13 +56,16 @@ Text {
     -fx-background-color: #654321;
 }
 
-/* TextField */
+/* TextField - Consistent sizing */
 .text-field {
     -fx-background-color: rgba(40, 30, 20, 0.95);
     -fx-text-fill: #F4E4C1;
     -fx-border-color: #D4AF37;
     -fx-border-width: 2px;
     -fx-prompt-text-fill: #B8A070;
+    -fx-pref-width: 230px;
+    -fx-max-width: 230px;
+    -fx-pref-height: 35px;
 }
 
 .text-field:focused {
@@ -82,7 +93,7 @@ Text {
     -fx-border-width: 2px;
 }
 
-/* Buttons */
+/* Buttons - Consistent sizing */
 .button {
     -fx-background-color: rgba(60, 40, 20, 0.95);
     -fx-text-fill: #F4E4C1;
@@ -92,6 +103,9 @@ Text {
     -fx-background-radius: 5;
     -fx-border-radius: 5;
     -fx-padding: 8px 16px;
+    -fx-pref-width: 230px;
+    -fx-max-width: 230px;
+    -fx-pref-height: 35px;
 }
 
 .button:hover {
@@ -105,7 +119,7 @@ Text {
     -fx-border-color: #DAA520;
 }
 
-/* MenuButton - ensure consistent sizing */
+/* MenuButton - Consistent sizing */
 .menu-button {
     -fx-background-color: rgba(60, 40, 20, 0.95);
     -fx-text-fill: #F4E4C1;
@@ -115,6 +129,9 @@ Text {
     -fx-background-radius: 5;
     -fx-border-radius: 5;
     -fx-padding: 8px 16px;
+    -fx-pref-width: 230px;
+    -fx-max-width: 230px;
+    -fx-pref-height: 35px;
 }
 
 .menu-button:hover {
@@ -126,6 +143,41 @@ Text {
     -fx-padding: 0;
     -fx-border-width: 0;
     -fx-background-color: transparent;
+}
+
+.menu-button .arrow-button {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}
+
+/* ChoiceBox - Consistent sizing */
+.choice-box {
+    -fx-background-color: rgba(60, 40, 20, 0.95);
+    -fx-text-fill: #F4E4C1;
+    -fx-border-color: #B8860B;
+    -fx-border-width: 3px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    -fx-pref-width: 230px;
+    -fx-max-width: 230px;
+    -fx-pref-height: 35px;
+}
+
+.choice-box:hover {
+    -fx-background-color: #8B4513;
+    -fx-border-color: #FFD700;
+}
+
+.choice-box .label {
+    -fx-text-fill: #F4E4C1;
+    -fx-padding: 0;
+    -fx-border-width: 0;
+    -fx-background-color: transparent;
+}
+
+.choice-box .arrow {
+    -fx-background-color: #F4E4C1;
 }
 
 /* Menu Items */
