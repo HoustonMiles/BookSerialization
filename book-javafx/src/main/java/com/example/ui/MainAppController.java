@@ -34,9 +34,6 @@ public class MainAppController {
             // Load Library page
             FXMLLoader libraryLoaderFXML = new FXMLLoader(getClass().getResource("Library.fxml"));
             libraryLoader = libraryLoaderFXML.load();
-            LibraryController libraryController = libraryLoaderFXML.getController();
-            libraryController.setBookList(bookList);
-
         } catch (IOException e) {
             e.printStackTrace();
         }

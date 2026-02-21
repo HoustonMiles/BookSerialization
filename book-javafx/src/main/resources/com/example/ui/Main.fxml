@@ -14,7 +14,7 @@
                 <Font size="24.0" />
             </font>
             <BorderPane.margin>
-                <Insets left="125" />  <!-- Half of side panel width (250/2 = 125) -->
+                <Insets left="125" />
             </BorderPane.margin>
         </Text>
     </top>

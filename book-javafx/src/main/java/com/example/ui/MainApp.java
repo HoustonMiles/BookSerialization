@@ -22,7 +22,6 @@ public class MainApp extends Application {
         // Get screen dimensions
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
 
-        // Side panel width (must match your CSS)
         double sidePanelWidth = 250;
 
         // Calculate center position for the main content (excluding side panel)
