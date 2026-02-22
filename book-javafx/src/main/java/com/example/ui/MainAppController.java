@@ -1,9 +1,5 @@
 package com.example.ui;
 
-import com.example.Book;
-
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,7 +12,6 @@ public class MainAppController {
     @FXML private BorderPane borderPane;
 
     private Parent homeLoader, bookLoader, libraryLoader;
-    private ObservableList<Book> bookList = FXCollections.observableArrayList();
 
     @FXML
     private void initialize() {
@@ -25,20 +20,24 @@ public class MainAppController {
             FXMLLoader homeLoaderFXML = new FXMLLoader(getClass().getResource("Home.fxml"));
             homeLoader = homeLoaderFXML.load();
 
-            // Load Book page
+            // Load Library page first — it owns the tab data and the addBook() logic.
+            // FXMLLoader also loads the embedded Book.fxml (via <fx:include>) and
+            // wires bookFormController automatically inside LibraryController.initialize().
+            FXMLLoader libraryLoaderFXML = new FXMLLoader(getClass().getResource("Library.fxml"));
+            libraryLoader = libraryLoaderFXML.load();
+            LibraryController libraryController = libraryLoaderFXML.getController();
+
+            // Load Book page as a standalone view too (for the "Add Book" nav button).
+            // We manually give it the same LibraryController so both views share one source of truth.
             FXMLLoader bookLoaderFXML = new FXMLLoader(getClass().getResource("Book.fxml"));
             bookLoader = bookLoaderFXML.load();
             BookController bookController = bookLoaderFXML.getController();
-            bookController.setBookList(bookList);
+            bookController.setLibraryController(libraryController);
 
-            // Load Library page
-            FXMLLoader libraryLoaderFXML = new FXMLLoader(getClass().getResource("Library.fxml"));
-            libraryLoader = libraryLoaderFXML.load();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        // Start with welcome message or empty center
         goToHome();
     }
 

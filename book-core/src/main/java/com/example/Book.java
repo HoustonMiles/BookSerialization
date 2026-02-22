@@ -13,6 +13,7 @@ public class Book implements Serializable, Comparable<Book> {
     private String title;
     private int year;
     private String isbn;
+    private boolean verified = false;
 
     public Book(String title, String author, int year, String isbn) {
         this.author = author;
@@ -38,6 +39,10 @@ public class Book implements Serializable, Comparable<Book> {
         return this.isbn;
     }
 
+    public boolean isVerified() {
+        return this.verified;
+    }
+
     // Setters
     public void setAuthor(String author) {
         this.author = author;
@@ -53,6 +58,10 @@ public class Book implements Serializable, Comparable<Book> {
 
     public void setIsbn(String isbn) {
         this.isbn = isbn;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
     }
 
     public String toString() {
