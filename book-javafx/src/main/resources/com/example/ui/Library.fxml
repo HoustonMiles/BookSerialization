@@ -48,7 +48,7 @@
                 <MenuButton fx:id="sortListButton" mnemonicParsing="false" text="Sort List" />
                 <ChoiceBox fx:id="searchChoiceBox" maxWidth="100.0" prefWidth="150.0" />
                 <TextField fx:id="searchField" maxWidth="125.0" />
-                <CheckBox fx:id="verifiedOnlyCheckBox" mnemonicParsing="false" text="All Books" />
+                <CheckBox fx:id="verifiedOnlyCheckBox" mnemonicParsing="false" text="Verified Only" />
             </children>
         </HBox>
         <HBox alignment="CENTER" prefHeight="27.0" prefWidth="200.0" spacing="10.0">

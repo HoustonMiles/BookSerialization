@@ -1,7 +1,7 @@
 package com.example.ui;
 
 import com.example.Book;
-import com.example.BookValidator;
+import com.example.ui.BookValidator;
 
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -26,7 +26,14 @@ public class BookController {
         this.libraryController = libraryController;
     }
 
-    // ── Add ───────────────────────────────────────────────────────────────────
+    @FXML
+    private void initialize() {
+        // Tooltip on Remove button
+        Tooltip tooltip = new Tooltip("If you don't have all the info, this button can complete it for you.");
+        tooltip.setShowDelay(javafx.util.Duration.millis(100));
+        tooltip.setShowDuration(javafx.util.Duration.INDEFINITE);
+        validateButton.setTooltip(tooltip);
+    }
 
     @FXML
     private void handleAddButtonAction() {
@@ -64,8 +71,6 @@ public class BookController {
             clearFields(); // also resets verified = false
         }
     }
-
-    // ── Validate ──────────────────────────────────────────────────────────────
 
     @FXML
     private void handleValidateAction() {
@@ -117,8 +122,6 @@ public class BookController {
 
         new Thread(task, "book-validator").start();
     }
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
 
     private void setButtonsDisabled(boolean disabled) {
         if (validateButton != null) validateButton.setDisable(disabled);

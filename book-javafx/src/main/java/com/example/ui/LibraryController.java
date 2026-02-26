@@ -3,7 +3,7 @@ package com.example.ui;
 import com.example.Book;
 import com.example.BookUtils;
 import com.example.BinarySerializer;
-import com.example.BookValidator;
+import com.example.ui.BookValidator;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -50,8 +50,6 @@ public class LibraryController {
     // Injected automatically by FXMLLoader: fx:id="bookForm" → bookFormController
     @FXML private BookController bookFormController;
 
-    // ── Per-tab data ──────────────────────────────────────────────────────────
-
     private static class LibraryTabData {
         final ObservableList<Book> bookList;
         final FilteredList<Book>   filteredList;
@@ -76,12 +74,10 @@ public class LibraryController {
         return selected == null ? null : tabDataMap.get(selected);
     }
 
-    // ── Initialise ────────────────────────────────────────────────────────────
-
     @FXML
     private void initialize() {
         // Tooltip on Remove button
-        Tooltip tooltip = new Tooltip("Select a book in the table, then click to remove it.");
+        Tooltip tooltip = new Tooltip("Select a book in the table, then click the Remove Book button.");
         tooltip.setShowDelay(javafx.util.Duration.millis(100));
         tooltip.setShowDuration(javafx.util.Duration.INDEFINITE);
         removeButton.setTooltip(tooltip);
@@ -111,6 +107,7 @@ public class LibraryController {
         Tab firstTab = libraryTabPane.getTabs().get(0);
         firstTab.setText("Library 1");
         tabDataMap.put(firstTab, new LibraryTabData(bookTable));
+        setupContextMenu(bookTable, tabDataMap.get(firstTab));
 
         MenuItem authorItem = new MenuItem("Author Ordered");
         MenuItem titleItem  = new MenuItem("Title Ordered");
@@ -119,11 +116,6 @@ public class LibraryController {
 
         searchChoiceBox.getItems().addAll("Search Author", "Search Title", "Search Year", "Search ISBN");
         searchChoiceBox.setValue("Search Author");
-
-        // FIX: use setPromptText (greyed-out hint) instead of setText (actual content).
-        // setText("Search Here!") was the root cause of issue 3 — the literal string
-        // "Search Here!" was being treated as a real search query by applyFilters(),
-        // so all books were filtered out whenever the text was non-blank.
         searchField.setPromptText("Search Here!");
 
         // Re-apply filters whenever the search text, search mode, or checkbox changes
@@ -154,16 +146,55 @@ public class LibraryController {
         }
     }
 
-    // ── Filter predicate ──────────────────────────────────────────────────────
+    private void setupContextMenu(TableView<Book> table, LibraryTabData sourceData) {
+        table.setRowFactory(tv -> {
+            TableRow<Book> row = new TableRow<>();
+            ContextMenu contextMenu = new ContextMenu();
 
-    /**
-     * Rebuilds the active tab's predicate combining the search field and the
-     * verified-only checkbox. Called any time either input changes so they
-     * never overwrite each other.
-     *
-     * Books are only HIDDEN by the predicate — they remain in bookList and
-     * reappear as soon as the filter is relaxed.
-     */
+            Menu moveToMenu = new Menu("Move to Library");
+
+            // Rebuild the submenu every time it opens so it reflects current tabs
+            contextMenu.setOnShowing(e -> {
+                moveToMenu.getItems().clear();
+                for (Map.Entry<Tab, LibraryTabData> entry : tabDataMap.entrySet()) {
+                    // Don't show the tab the book is already in
+                    if (entry.getValue() == sourceData) continue;
+                    MenuItem item = new MenuItem(entry.getKey().getText());
+                    LibraryTabData targetData = entry.getValue();
+                    item.setOnAction(ev -> {
+                        Book selected = row.getItem();
+                        if (selected == null) return;
+                        if (duplicateInList(selected, targetData.bookList)) {
+                            statusLabel.setText("Book already exists in that library.");
+                            return;
+                        }
+                        targetData.bookList.add(selected);
+                        sourceData.bookList.remove(selected);
+                        statusLabel.setText("Book moved to " + entry.getKey().getText());
+                    });
+                    moveToMenu.getItems().add(item);
+                }
+                // If there are no other tabs, show a disabled placeholder
+                if (moveToMenu.getItems().isEmpty()) {
+                    MenuItem none = new MenuItem("No other libraries");
+                    none.setDisable(true);
+                    moveToMenu.getItems().add(none);
+                }
+            });
+
+            contextMenu.getItems().add(moveToMenu);
+
+            // Only show the context menu on non-empty rows
+            row.contextMenuProperty().bind(
+                    javafx.beans.binding.Bindings.when(row.emptyProperty())
+                            .then((ContextMenu) null)
+                            .otherwise(contextMenu)
+            );
+
+            return row;
+        });
+    }
+
     private void applyFilters() {
         LibraryTabData data = currentData();
         if (data == null) return;
@@ -189,12 +220,6 @@ public class LibraryController {
         });
     }
 
-    // ── Public API (called by BookController) ─────────────────────────────────
-
-    /**
-     * Adds a book to the currently active tab.
-     * Returns a status string the caller can display.
-     */
     public String addBook(Book book) {
         LibraryTabData data = currentData();
         if (data == null) return "No active library.";
@@ -203,8 +228,6 @@ public class LibraryController {
         statusLabel.setText("Book added");
         return "Book added";
     }
-
-    // ── Tab management ────────────────────────────────────────────────────────
 
     @FXML
     private void handleNewTabAction() {
@@ -249,6 +272,7 @@ public class LibraryController {
             Tab tab = new Tab(name.trim(), tabContent);
             tab.setClosable(false);
             tabDataMap.put(tab, new LibraryTabData(newTable));
+            setupContextMenu(newTable, tabDataMap.get(tab));
             libraryTabPane.getTabs().add(tab);
             libraryTabPane.getSelectionModel().select(tab);
             tabCounter++;
@@ -276,8 +300,6 @@ public class LibraryController {
             }
         });
     }
-
-    // ── Book operations ───────────────────────────────────────────────────────
 
     private boolean duplicateBook(Book book) {
         LibraryTabData data = currentData();
@@ -310,8 +332,6 @@ public class LibraryController {
         }
     }
 
-    // ── Save / Load ───────────────────────────────────────────────────────────
-
     @FXML
     private void handleSaveButtonAction() {
         try {
@@ -322,7 +342,7 @@ public class LibraryController {
             FileChooser fc = new FileChooser();
             fc.setTitle("Save File");
             fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Serialization Files", "*.xml", "*.csv", "*.bin"));
-            fc.setInitialFileName("serializedBooks");
+            fc.setInitialFileName(libraryTabPane.getSelectionModel().getSelectedItem().getText());
             File file = fc.showSaveDialog(statusLabel.getScene().getWindow());
             if (file == null) return;
 
@@ -334,11 +354,6 @@ public class LibraryController {
         } catch (IOException e) { e.printStackTrace(); }
     }
 
-    /**
-     * Loads books from a file, validates every one against Open Library in a
-     * background thread, then adds the completed (and verified) books to the
-     * current tab's list.
-     */
     @FXML
     private void handleLoadButtonAction() {
         LibraryTabData data = currentData();
@@ -416,8 +431,6 @@ public class LibraryController {
 
         new Thread(validateTask, "load-validator").start();
     }
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
 
     private void showInfo(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
