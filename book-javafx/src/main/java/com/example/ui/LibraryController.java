@@ -3,7 +3,6 @@ package com.example.ui;
 import com.example.Book;
 import com.example.BookUtils;
 import com.example.BinarySerializer;
-import com.example.ui.BookValidator;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,23 +10,23 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 public class LibraryController {
+
     @FXML private TableView<Book> bookTable;
 
     @FXML private TableColumn<Book, String>  titleColumn;
@@ -39,16 +38,8 @@ public class LibraryController {
 
     @FXML private TextField         searchField;
     @FXML private ChoiceBox<String> searchChoiceBox;
-
-    @FXML private MenuButton sortListButton;
-    @FXML private Label      statusLabel;
-    @FXML private Button     removeButton;
-
-    // Changed from ToggleButton to CheckBox so it visually shows on/off state
-    @FXML private CheckBox verifiedOnlyCheckBox;
-
-    // Injected automatically by FXMLLoader: fx:id="bookForm" → bookFormController
-    @FXML private BookController bookFormController;
+    @FXML private CheckBox          verifiedOnlyCheckBox;
+    @FXML private Label             statusLabel;
 
     private static class LibraryTabData {
         final ObservableList<Book> bookList;
@@ -76,12 +67,6 @@ public class LibraryController {
 
     @FXML
     private void initialize() {
-        // Tooltip on Remove button
-        Tooltip tooltip = new Tooltip("Select a book in the table, then click the Remove Book button.");
-        tooltip.setShowDelay(javafx.util.Duration.millis(100));
-        tooltip.setShowDuration(javafx.util.Duration.INDEFINITE);
-        removeButton.setTooltip(tooltip);
-
         bookTable.setEditable(true);
 
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
@@ -109,55 +94,29 @@ public class LibraryController {
         tabDataMap.put(firstTab, new LibraryTabData(bookTable));
         setupContextMenu(bookTable, tabDataMap.get(firstTab));
 
-        MenuItem authorItem = new MenuItem("Author Ordered");
-        MenuItem titleItem  = new MenuItem("Title Ordered");
-        MenuItem yearItem   = new MenuItem("Year Ordered");
-        MenuItem isbnItem   = new MenuItem("ISBN Ordered");
-
         searchChoiceBox.getItems().addAll("Search Author", "Search Title", "Search Year", "Search ISBN");
         searchChoiceBox.setValue("Search Author");
-        searchField.setPromptText("Search Here!");
+        searchField.setPromptText("Search…");
 
-        // Re-apply filters whenever the search text, search mode, or checkbox changes
-        searchField.textProperty().addListener((obs, oldValue, newValue) -> applyFilters());
-
-        searchChoiceBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) { searchField.clear(); applyFilters(); }
+        searchField.textProperty().addListener((obs, o, n) -> applyFilters());
+        searchChoiceBox.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
+            if (n != null) { searchField.clear(); applyFilters(); }
         });
+        verifiedOnlyCheckBox.selectedProperty().addListener((obs, o, n) -> applyFilters());
+        libraryTabPane.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> applyFilters());
 
-        // CheckBox listener — re-apply filters when ticked or unticked
-        verifiedOnlyCheckBox.selectedProperty().addListener((obs, wasSelected, isSelected) ->
-                applyFilters());
-
-        // Re-apply filters when switching tabs so the checkbox state is respected on the new tab
-        libraryTabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) ->
-                applyFilters());
-
-        authorItem.setOnAction(e -> { LibraryTabData d = currentData(); if (d != null) d.sortedList.setComparator(Book.BY_AUTHOR); });
-        titleItem .setOnAction(e -> { LibraryTabData d = currentData(); if (d != null) d.sortedList.setComparator(Book.BY_TITLE); });
-        yearItem  .setOnAction(e -> { LibraryTabData d = currentData(); if (d != null) d.sortedList.setComparator(Book.BY_YEAR); });
-        isbnItem  .setOnAction(e -> { LibraryTabData d = currentData(); if (d != null) d.sortedList.setComparator(Book.BY_ISBN); });
-
-        sortListButton.getItems().addAll(authorItem, titleItem, yearItem, isbnItem);
         statusLabel.setText("Ready");
-
-        if (bookFormController != null) {
-            bookFormController.setLibraryController(this);
-        }
     }
 
     private void setupContextMenu(TableView<Book> table, LibraryTabData sourceData) {
         table.setRowFactory(tv -> {
             TableRow<Book> row = new TableRow<>();
             ContextMenu contextMenu = new ContextMenu();
-
             Menu moveToMenu = new Menu("Move to Library");
 
-            // Rebuild the submenu every time it opens so it reflects current tabs
             contextMenu.setOnShowing(e -> {
                 moveToMenu.getItems().clear();
                 for (Map.Entry<Tab, LibraryTabData> entry : tabDataMap.entrySet()) {
-                    // Don't show the tab the book is already in
                     if (entry.getValue() == sourceData) continue;
                     MenuItem item = new MenuItem(entry.getKey().getText());
                     LibraryTabData targetData = entry.getValue();
@@ -174,7 +133,6 @@ public class LibraryController {
                     });
                     moveToMenu.getItems().add(item);
                 }
-                // If there are no other tabs, show a disabled placeholder
                 if (moveToMenu.getItems().isEmpty()) {
                     MenuItem none = new MenuItem("No other libraries");
                     none.setDisable(true);
@@ -183,14 +141,11 @@ public class LibraryController {
             });
 
             contextMenu.getItems().add(moveToMenu);
-
-            // Only show the context menu on non-empty rows
             row.contextMenuProperty().bind(
                     javafx.beans.binding.Bindings.when(row.emptyProperty())
                             .then((ContextMenu) null)
                             .otherwise(contextMenu)
             );
-
             return row;
         });
     }
@@ -204,10 +159,7 @@ public class LibraryController {
         String  searchMode   = searchChoiceBox.getValue();
 
         data.filteredList.setPredicate(book -> {
-            // Verified-only gate — hide unverified books when checkbox is ticked
             if (verifiedOnly && !book.isVerified()) return false;
-
-            // Search gate — empty/blank search shows everything that passed the first gate
             if (searchText == null || searchText.isBlank()) return true;
             String q = searchText.toLowerCase().trim();
             return switch (searchMode) {
@@ -229,6 +181,28 @@ public class LibraryController {
         return "Book added";
     }
 
+    // ── Menu handlers ─────────────────────────────────────────────────────────
+
+    @FXML
+    private void handleAddBookAction() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("Book.fxml"));
+            VBox content = loader.load();
+            BookController bookController = loader.getController();
+            bookController.setLibraryController(this);
+
+            Stage dialog = new Stage();
+            dialog.setTitle("Add Book");
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.setScene(new Scene(content));
+            dialog.setResizable(false);
+            dialog.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+            statusLabel.setText("Error opening Add Book dialog.");
+        }
+    }
+
     @FXML
     private void handleNewTabAction() {
         TextInputDialog dialog = new TextInputDialog("Library " + tabCounter);
@@ -241,13 +215,16 @@ public class LibraryController {
             TableView<Book> newTable = new TableView<>();
             newTable.setEditable(true);
             newTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-            newTable.setPrefWidth(680);
-            newTable.setPrefHeight(431);
 
             TableColumn<Book, String>  tc = new TableColumn<>("Title");
             TableColumn<Book, String>  ac = new TableColumn<>("Author");
             TableColumn<Book, Integer> yc = new TableColumn<>("Year");
             TableColumn<Book, String>  ic = new TableColumn<>("ISBN");
+
+            tc.setPrefWidth(220);
+            ac.setPrefWidth(180);
+            yc.setPrefWidth(80);
+            ic.setPrefWidth(150);
 
             tc.setCellValueFactory(new PropertyValueFactory<>("title"));
             ac.setCellValueFactory(new PropertyValueFactory<>("author"));
@@ -265,9 +242,9 @@ public class LibraryController {
             ic.setOnEditCommit(t -> t.getTableView().getItems().get(t.getTablePosition().getRow()).setIsbn(t.getNewValue()));
 
             newTable.getColumns().addAll(tc, ac, yc, ic);
+
             VBox tabContent = new VBox(newTable);
             VBox.setVgrow(newTable, javafx.scene.layout.Priority.ALWAYS);
-            tabContent.setPrefSize(680, 431);
 
             Tab tab = new Tab(name.trim(), tabContent);
             tab.setClosable(false);
@@ -301,24 +278,6 @@ public class LibraryController {
         });
     }
 
-    private boolean duplicateBook(Book book) {
-        LibraryTabData data = currentData();
-        if (data == null) return false;
-        for (Book b : data.bookList) {
-            if (book.equals(b)) return true;
-        }
-        return false;
-    }
-
-    // Overload that checks against a specific tab's list — used inside background
-    // tasks where currentData() might point to a different tab than the one being loaded
-    private boolean duplicateInList(Book book, ObservableList<Book> list) {
-        for (Book b : list) {
-            if (book.equals(b)) return true;
-        }
-        return false;
-    }
-
     @FXML
     private void handleRemoveButtonAction() {
         LibraryTabData data = currentData();
@@ -328,9 +287,14 @@ public class LibraryController {
             showInfo("Please select a book.");
         } else {
             data.bookList.remove(selectedBook);
-            statusLabel.setText("Book removed!");
+            statusLabel.setText("Book removed.");
         }
     }
+
+    @FXML private void handleSortByAuthor() { LibraryTabData d = currentData(); if (d != null) d.sortedList.setComparator(Book.BY_AUTHOR); }
+    @FXML private void handleSortByTitle()  { LibraryTabData d = currentData(); if (d != null) d.sortedList.setComparator(Book.BY_TITLE);  }
+    @FXML private void handleSortByYear()   { LibraryTabData d = currentData(); if (d != null) d.sortedList.setComparator(Book.BY_YEAR);   }
+    @FXML private void handleSortByIsbn()   { LibraryTabData d = currentData(); if (d != null) d.sortedList.setComparator(Book.BY_ISBN);   }
 
     @FXML
     private void handleSaveButtonAction() {
@@ -341,7 +305,7 @@ public class LibraryController {
 
             FileChooser fc = new FileChooser();
             fc.setTitle("Save File");
-            fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Serialization Files", "*.xml", "*.csv", "*.bin"));
+            fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Library Files", "*.xml", "*.csv", "*.bin"));
             fc.setInitialFileName(libraryTabPane.getSelectionModel().getSelectedItem().getText());
             File file = fc.showSaveDialog(statusLabel.getScene().getWindow());
             if (file == null) return;
@@ -351,6 +315,7 @@ public class LibraryController {
             else if (file.getName().endsWith(".xml")) BookUtils.serializeToXML(bookSet, file);
             else if (file.getName().endsWith(".bin")) BinarySerializer.binarySerialize(bookSet, file);
 
+            statusLabel.setText("Saved to " + file.getName());
         } catch (IOException e) { e.printStackTrace(); }
     }
 
@@ -361,7 +326,7 @@ public class LibraryController {
 
         FileChooser fc = new FileChooser();
         fc.setTitle("Open File");
-        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Serialization Files", "*.xml", "*.csv", "*.bin"));
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Library Files", "*.xml", "*.csv", "*.bin"));
         File file = fc.showOpenDialog(statusLabel.getScene().getWindow());
         if (file == null) return;
 
@@ -375,22 +340,20 @@ public class LibraryController {
             }
         } catch (IOException | ClassNotFoundException e) {
             statusLabel.setText("Error loading: " + e.getMessage());
-            e.printStackTrace();
             return;
         }
 
         if (loaded == null || loaded.isEmpty()) { showInfo("File is empty"); return; }
 
-        // Filter duplicates before starting the network task
         List<Book> toValidate = new ArrayList<>();
         for (Book b : loaded) {
             if (!duplicateInList(b, data.bookList)) toValidate.add(b);
             else statusLabel.setText("Skipped duplicate(s)");
         }
 
-        if (toValidate.isEmpty()) { showInfo("All books in the file already exist."); return; }
+        if (toValidate.isEmpty()) { showInfo("All books already exist."); return; }
 
-        statusLabel.setText("Loaded " + toValidate.size() + " book(s). Validating with Open Library…");
+        statusLabel.setText("Validating " + toValidate.size() + " book(s) with Open Library…");
 
         Task<List<Book>> validateTask = new Task<>() {
             @Override
@@ -399,9 +362,7 @@ public class LibraryController {
                 for (int i = 0; i < toValidate.size(); i++) {
                     Book b = toValidate.get(i);
                     BookValidator.ValidationResult r = BookValidator.validate(b);
-                    // r.completedBook has verified=true when found; original book (verified=false) when not
                     completed.add(r.found ? r.completedBook : b);
-                    updateProgress(i + 1, toValidate.size());
                     updateMessage("Validating " + (i + 1) + " / " + toValidate.size() + "…");
                 }
                 return completed;
@@ -409,27 +370,34 @@ public class LibraryController {
         };
 
         validateTask.messageProperty().addListener((obs, o, n) -> statusLabel.setText(n));
-
         validateTask.setOnSucceeded(e -> {
-            List<Book> completedBooks = validateTask.getValue();
             int added = 0, verified = 0;
-            for (Book b : completedBooks) {
-                // FIX: use duplicateInList against the captured data.bookList, not
-                // currentData(), so we always check the correct tab even if the user
-                // has switched tabs while the background task was running
+            for (Book b : validateTask.getValue()) {
                 if (!duplicateInList(b, data.bookList)) {
                     data.bookList.add(b);
                     added++;
                     if (b.isVerified()) verified++;
                 }
             }
-            statusLabel.setText("Added " + added + " book(s), " + verified + " verified by Open Library.");
+            statusLabel.setText("Added " + added + " book(s), " + verified + " verified.");
         });
-
         validateTask.setOnFailed(e ->
                 statusLabel.setText("Validation error: " + validateTask.getException().getMessage()));
 
         new Thread(validateTask, "load-validator").start();
+    }
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    private boolean duplicateBook(Book book) {
+        LibraryTabData data = currentData();
+        if (data == null) return false;
+        return duplicateInList(book, data.bookList);
+    }
+
+    private boolean duplicateInList(Book book, ObservableList<Book> list) {
+        for (Book b : list) { if (book.equals(b)) return true; }
+        return false;
     }
 
     private void showInfo(String message) {

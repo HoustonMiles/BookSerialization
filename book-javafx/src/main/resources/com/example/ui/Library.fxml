@@ -1,63 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.control.CheckBox?>
-<VBox alignment="CENTER" maxHeight="497.0" minHeight="222.0" prefHeight="497.0" prefWidth="680.0"
-      spacing="10.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.example.ui.LibraryController">
+<VBox xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.ui.LibraryController"
+      prefHeight="550.0" prefWidth="780.0" spacing="0.0">
     <children>
-        <Label fx:id="statusLabel" text="Ready" />
-        <HBox alignment="CENTER" prefHeight="27.0" prefWidth="695.0" spacing="10.0">
-            <children>
-                <Button mnemonicParsing="false" onAction="#handleNewTabAction" text="New Library" />
-                <Button mnemonicParsing="false" onAction="#handleDeleteTabAction" text="Delete Library" />
-            </children>
+
+        <!-- Menu bar -->
+        <MenuBar>
+            <menus>
+                <Menu text="File">
+                    <items>
+                        <MenuItem text="Save as File" onAction="#handleSaveButtonAction"/>
+                        <MenuItem text="Load a File"  onAction="#handleLoadButtonAction"/>
+                    </items>
+                </Menu>
+                <Menu text="Edit">
+                    <items>
+                        <MenuItem text="Add Book"       onAction="#handleAddBookAction"/>
+                        <MenuItem text="Remove Book"    onAction="#handleRemoveButtonAction"/>
+                        <SeparatorMenuItem/>
+                        <MenuItem text="New Library"    onAction="#handleNewTabAction"/>
+                        <MenuItem text="Delete Library" onAction="#handleDeleteTabAction"/>
+                    </items>
+                </Menu>
+                <Menu text="Sort">
+                    <items>
+                        <MenuItem text="By Author" onAction="#handleSortByAuthor"/>
+                        <MenuItem text="By Title"  onAction="#handleSortByTitle"/>
+                        <MenuItem text="By Year"   onAction="#handleSortByYear"/>
+                        <MenuItem text="By ISBN"   onAction="#handleSortByIsbn"/>
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+        <HBox alignment="CENTER_LEFT" spacing="8.0">
+            <ChoiceBox fx:id="searchChoiceBox" prefWidth="130.0"/>
+            <TextField fx:id="searchField" prefWidth="180.0"/>
+            <CheckBox fx:id="verifiedOnlyCheckBox" mnemonicParsing="false" text="Verified Only"/>
         </HBox>
-        <TabPane fx:id="libraryTabPane" prefHeight="431.0" prefWidth="680.0" tabClosingPolicy="UNAVAILABLE">
+        <TabPane fx:id="libraryTabPane" VBox.vgrow="ALWAYS"
+                 prefHeight="431.0" prefWidth="780.0" tabClosingPolicy="UNAVAILABLE">
             <tabs>
                 <Tab text="Library 1">
                     <content>
-                        <TableView fx:id="bookTable" prefHeight="431.0" prefWidth="680.0">
+                        <TableView fx:id="bookTable" prefHeight="431.0" prefWidth="780.0">
                             <columns>
-                                <TableColumn fx:id="titleColumn"  prefWidth="141.0" text="Title" />
-                                <TableColumn fx:id="authorColumn" prefWidth="131.0" text="Author" />
-                                <TableColumn fx:id="yearColumn"   prefWidth="95.0"  text="Year" />
-                                <TableColumn fx:id="isbnColumn"   prefWidth="145.0" text="ISBN" />
+                                <TableColumn fx:id="titleColumn"  prefWidth="220.0" text="Title"/>
+                                <TableColumn fx:id="authorColumn" prefWidth="180.0" text="Author"/>
+                                <TableColumn fx:id="yearColumn"   prefWidth="80.0"  text="Year"/>
+                                <TableColumn fx:id="isbnColumn"   prefWidth="150.0" text="ISBN"/>
                             </columns>
                         </TableView>
                     </content>
                 </Tab>
             </tabs>
         </TabPane>
-        <HBox alignment="TOP_CENTER" prefHeight="27.0" prefWidth="695.0" spacing="10.0">
-            <children>
-                <Button fx:id="removeButton" mnemonicParsing="false"
-                        onAction="#handleRemoveButtonAction" text="Remove Book" />
-                <MenuButton fx:id="sortListButton" mnemonicParsing="false" text="Sort List" />
-                <ChoiceBox fx:id="searchChoiceBox" maxWidth="100.0" prefWidth="150.0" />
-                <TextField fx:id="searchField" maxWidth="125.0" />
-                <CheckBox fx:id="verifiedOnlyCheckBox" mnemonicParsing="false" text="Verified Only" />
-            </children>
+        <HBox>
+            <Label fx:id="statusLabel" text="Ready"/>
         </HBox>
-        <HBox alignment="CENTER" prefHeight="27.0" prefWidth="200.0" spacing="10.0">
-            <children>
-                <Button fx:id="saveFileButton" mnemonicParsing="false"
-                        onAction="#handleSaveButtonAction" text="Save as File" />
-                <Button fx:id="loadFileButton" mnemonicParsing="false"
-                        onAction="#handleLoadButtonAction" text="Load a File" />
-            </children>
-        </HBox>
+
     </children>
 </VBox>
