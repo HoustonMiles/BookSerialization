@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class BookValidator {
 
-    // ── Result returned to callers ────────────────────────────────────────────
+    // Result returned to callers
 
     public static class ValidationResult {
         public final boolean found;
@@ -36,7 +36,7 @@ public class BookValidator {
         }
     }
 
-    // ── HTTP client ───────────────────────────────────────────────────────────
+    // HTTP client
 
     private static final HttpClient CLIENT = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(6))
@@ -45,7 +45,7 @@ public class BookValidator {
     private static final String SEARCH_BASE  = "https://openlibrary.org/search.json";
     private static final String EDITION_BASE = "https://openlibrary.org/books/";
 
-    // ── Public API ────────────────────────────────────────────────────────────
+    // Public API
 
     public static ValidationResult validate(Book book) {
         String isbn   = nullSafe(book.getIsbn());
@@ -87,7 +87,7 @@ public class BookValidator {
                 }
             }
 
-            // ── Extract fields from the chosen doc ────────────────────────────
+            // Extract fields from the chosen doc
 
             String apiTitle  = extractString(doc, "title");
             int    apiYear   = extractInt(doc, "first_publish_year");
@@ -136,7 +136,7 @@ public class BookValidator {
         }
     }
 
-    // ── Best-match doc selection ──────────────────────────────────────────────
+    // Best-match doc selection
 
     /**
      * Parses all docs from {@code json} and returns the one whose title most
@@ -197,7 +197,7 @@ public class BookValidator {
         return (double) intersection.size() / union.size();
     }
 
-    // ── Edition API call to retrieve ISBN ─────────────────────────────────────
+    // Edition API call to retrieve ISBN
 
     private static String fetchIsbnFromEdition(String editionKey)
             throws IOException, InterruptedException {
@@ -207,7 +207,7 @@ public class BookValidator {
         return isbn;
     }
 
-    // ── HTTP helper ───────────────────────────────────────────────────────────
+    // HTTP helper
 
     private static String fetch(String url) throws IOException, InterruptedException {
         HttpRequest req = HttpRequest.newBuilder()
@@ -219,7 +219,7 @@ public class BookValidator {
         return CLIENT.send(req, HttpResponse.BodyHandlers.ofString()).body();
     }
 
-    // ── Minimal JSON extraction ───────────────────────────────────────────────
+    // Minimal JSON extraction
 
     /** Returns the raw JSON object of the first element in "docs":[...] */
     private static String firstDoc(String json) {
@@ -322,7 +322,7 @@ public class BookValidator {
         return last;
     }
 
-    // ── Misc helpers ──────────────────────────────────────────────────────────
+    // Misc helpers
 
     private static String encode(String s) {
         return URLEncoder.encode(s, StandardCharsets.UTF_8);

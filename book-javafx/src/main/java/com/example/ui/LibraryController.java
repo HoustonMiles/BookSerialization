@@ -181,7 +181,7 @@ public class LibraryController {
         return "Book added";
     }
 
-    // ── Menu handlers ─────────────────────────────────────────────────────────
+    // Menu handlers
 
     @FXML
     private void handleAddBookAction() {
@@ -305,13 +305,25 @@ public class LibraryController {
 
             FileChooser fc = new FileChooser();
             fc.setTitle("Save File");
-            fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Library Files", "*.xml", "*.csv", "*.bin"));
+            fc.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("CSV (.csv)", "*.csv"),
+                    new FileChooser.ExtensionFilter("XML (.xml)", "*.xml"),
+                    new FileChooser.ExtensionFilter("Binary (.bin)", "*.bin")
+            );
             fc.setInitialFileName(libraryTabPane.getSelectionModel().getSelectedItem().getText());
             File file = fc.showSaveDialog(statusLabel.getScene().getWindow());
             if (file == null) return;
 
+            // On Linux the file chooser doesn't append the extension automatically
+            String ext = switch (fc.getSelectedExtensionFilter().getDescription()) {
+                case "XML (.xml)" -> ".xml";
+                case "Binary (.bin)" -> ".bin";
+                default -> ".csv";
+            };
+            if (!file.getName().contains(".")) file = new File(file.getAbsolutePath() + ext);
+
             TreeSet<Book> bookSet = new TreeSet<>(data.bookList);
-            if      (file.getName().endsWith(".csv")) BookUtils.serializeToCSV(bookSet, file);
+            if (file.getName().endsWith(".csv")) BookUtils.serializeToCSV(bookSet, file);
             else if (file.getName().endsWith(".xml")) BookUtils.serializeToXML(bookSet, file);
             else if (file.getName().endsWith(".bin")) BinarySerializer.binarySerialize(bookSet, file);
 
@@ -332,7 +344,7 @@ public class LibraryController {
 
         Set<Book> loaded = null;
         try {
-            if      (file.getName().endsWith(".csv")) loaded = BookUtils.deserializeFromCSV(file);
+            if (file.getName().endsWith(".csv")) loaded = BookUtils.deserializeFromCSV(file);
             else if (file.getName().endsWith(".xml")) loaded = BookUtils.deserializeFromXML(file);
             else if (file.getName().endsWith(".bin")) {
                 loaded = (Set<Book>) BinarySerializer.binaryDeserialize(file);
@@ -387,7 +399,7 @@ public class LibraryController {
         new Thread(validateTask, "load-validator").start();
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
+    // Helpers
 
     private boolean duplicateBook(Book book) {
         LibraryTabData data = currentData();

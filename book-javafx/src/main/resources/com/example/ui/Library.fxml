@@ -24,8 +24,6 @@
       fx:controller="com.example.ui.LibraryController"
       prefHeight="550.0" prefWidth="780.0" spacing="0.0">
     <children>
-
-        <!-- Menu bar -->
         <MenuBar>
             <menus>
                 <Menu text="File">
