@@ -15,9 +15,10 @@ public class BookController {
 
     @FXML private Label  statusLabel;
     @FXML private Button validateButton;
-    @FXML private Button addButton;
+    @FXML private Button saveButton;
 
     private LibraryController libraryController;
+    private Book bookToEdit = null;
 
     // Tracks whether the current form content has been verified via Open Library
     private boolean verified = false;
@@ -36,7 +37,7 @@ public class BookController {
     }
 
     @FXML
-    private void handleAddButtonAction() {
+    private void handleSaveButtonAction() {
         if (libraryController == null) {
             statusLabel.setText("Error: library not connected.");
             return;
@@ -62,13 +63,24 @@ public class BookController {
             return;
         }
 
-        Book newBook = new Book(title, author, year, isbn);
-        newBook.setVerified(verified); // stamp the verified state onto the book
-        String result = libraryController.addBook(newBook);
-        statusLabel.setText(result);
-
-        if ("Book added".equals(result)) {
-            clearFields(); // also resets verified = false
+        if (bookToEdit != null) {
+            // Edit mode — update the existing book in place
+            bookToEdit.setTitle(title);
+            bookToEdit.setAuthor(author);
+            bookToEdit.setYear(year);
+            bookToEdit.setIsbn(isbn);
+            bookToEdit.setVerified(verified);
+            libraryController.refreshTable();
+            statusLabel.setText("Book updated.");
+            bookToEdit = null;
+            titleField.getScene().getWindow().hide();
+        } else {
+            // Add mode — create a new book
+            Book newBook = new Book(title, author, year, isbn);
+            newBook.setVerified(verified);
+            String result = libraryController.addBook(newBook);
+            statusLabel.setText(result);
+            if ("Book added".equals(result)) clearFields();
         }
     }
 
@@ -123,9 +135,18 @@ public class BookController {
         new Thread(task, "book-validator").start();
     }
 
+    public void setFields(Book book) {
+        bookToEdit = book;
+        titleField.setText(book.getTitle());
+        authorField.setText(book.getAuthor());
+        yearField.setText(String.valueOf(book.getYear()));
+        isbnField.setText(book.getIsbn());
+        verified = book.isVerified();
+    }
+
     private void setButtonsDisabled(boolean disabled) {
         if (validateButton != null) validateButton.setDisable(disabled);
-        if (addButton      != null) addButton.setDisable(disabled);
+        if (saveButton      != null) saveButton.setDisable(disabled);
     }
 
     private void clearFields() {

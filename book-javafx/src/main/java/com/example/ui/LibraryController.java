@@ -204,6 +204,34 @@ public class LibraryController {
     }
 
     @FXML
+    private void handleEditBookAction() {
+        LibraryTabData data = currentData();
+        if (data == null) return;
+        Book selectedBook = data.tableView.getSelectionModel().getSelectedItem();
+        if (selectedBook == null) {
+            showInfo("Please select a book.");
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("Book.fxml"));
+            VBox content = loader.load();
+            BookController bookController = loader.getController();
+            bookController.setLibraryController(this);
+            bookController.setFields(selectedBook);
+
+            Stage dialog = new Stage();
+            dialog.setTitle("Edit Book");
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.setScene(new Scene(content));
+            dialog.setResizable(false);
+            dialog.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+            statusLabel.setText("Error opening Edit Book dialog.");
+        }
+    }
+
+    @FXML
     private void handleNewTabAction() {
         TextInputDialog dialog = new TextInputDialog("Library " + tabCounter);
         dialog.setTitle("New Library");
@@ -400,6 +428,11 @@ public class LibraryController {
     }
 
     // Helpers
+
+    public void refreshTable() {
+        LibraryTabData data = currentData();
+        if (data != null) data.tableView.refresh();
+    }
 
     private boolean duplicateBook(Book book) {
         LibraryTabData data = currentData();
