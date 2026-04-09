@@ -34,6 +34,7 @@
                         <MenuItem text="Remove Book"    onAction="#handleRemoveButtonAction"/>
                         <SeparatorMenuItem/>
                         <MenuItem text="New Library"    onAction="#handleNewTabAction"/>
+                        <MenuItem text="Edit Library"   onAction="#handleEditTabAction"/>
                         <MenuItem text="Delete Library" onAction="#handleDeleteTabAction"/>
                     </items>
                 </Menu>

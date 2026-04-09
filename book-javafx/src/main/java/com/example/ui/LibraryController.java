@@ -286,6 +286,21 @@ public class LibraryController {
     }
 
     @FXML
+    private void handleEditTabAction() {
+        Tab selected = libraryTabPane.getSelectionModel().getSelectedItem();
+        if (selected == null) return;
+        TextInputDialog dialog = new TextInputDialog(selected.getText());
+        dialog.setTitle("Edit Library Name");
+        dialog.setHeaderText(null);
+        dialog.setContentText("Library name:");
+        dialog.showAndWait().ifPresent(name -> {
+            if (name.isBlank()) return;
+            selected.setText(name.trim());
+            statusLabel.setText("Edited library: " + name.trim());
+        });
+    }
+
+    @FXML
     private void handleDeleteTabAction() {
         if (libraryTabPane.getTabs().size() <= 1) {
             showInfo("Cannot delete the last library.");
