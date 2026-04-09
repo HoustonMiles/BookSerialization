@@ -33,6 +33,7 @@ public class LibraryController {
     @FXML private TableColumn<Book, String>  authorColumn;
     @FXML private TableColumn<Book, Integer> yearColumn;
     @FXML private TableColumn<Book, String>  isbnColumn;
+    @FXML private TableColumn<Book, Boolean> verifiedColumn;
 
     @FXML private TabPane libraryTabPane;
 
@@ -40,6 +41,7 @@ public class LibraryController {
     @FXML private ChoiceBox<String> searchChoiceBox;
     @FXML private CheckBox          verifiedOnlyCheckBox;
     @FXML private Label             statusLabel;
+    @FXML private Label             bookCountLabel;
 
     private static class LibraryTabData {
         final ObservableList<Book> bookList;
@@ -89,10 +91,12 @@ public class LibraryController {
         isbnColumn.setOnEditCommit(t -> t.getTableView().getItems()
                 .get(t.getTablePosition().getRow()).setIsbn(t.getNewValue()));
 
+        setupVerifiedColumn(verifiedColumn);
+
         Tab firstTab = libraryTabPane.getTabs().get(0);
         firstTab.setText("Library 1");
         tabDataMap.put(firstTab, new LibraryTabData(bookTable));
-        setupContextMenu(bookTable, tabDataMap.get(firstTab));
+        setupTableBehavior(bookTable, tabDataMap.get(firstTab));
 
         searchChoiceBox.getItems().addAll("Search Author", "Search Title", "Search Year", "Search ISBN");
         searchChoiceBox.setValue("Search Author");
@@ -103,12 +107,33 @@ public class LibraryController {
             if (n != null) { searchField.clear(); applyFilters(); }
         });
         verifiedOnlyCheckBox.selectedProperty().addListener((obs, o, n) -> applyFilters());
-        libraryTabPane.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> applyFilters());
+        libraryTabPane.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
+                applyFilters();
+                updateBookCount();
+        });
 
         statusLabel.setText("Ready");
     }
 
-    private void setupContextMenu(TableView<Book> table, LibraryTabData sourceData) {
+    private void setupVerifiedColumn(TableColumn<Book, Boolean> col) {
+        col.setCellValueFactory(new PropertyValueFactory<>("verified"));
+        col.setCellFactory(c -> new TableCell<>() {
+            @Override
+            protected void updateItem(Boolean verified, boolean empty) {
+                super.updateItem(verified, empty);
+                if (empty || verified == null) {
+                    setText(null);
+                } else {
+                    setText(verified ? "Yes" : "No");;
+                }
+            }
+        });
+        col.setSortable(false);
+        col.setEditable(false);
+    }
+
+    private void setupTableBehavior(TableView<Book> table, LibraryTabData sourceData) {
+        // Context menu with Move To submenu
         table.setRowFactory(tv -> {
             TableRow<Book> row = new TableRow<>();
             ContextMenu contextMenu = new ContextMenu();
@@ -129,6 +154,7 @@ public class LibraryController {
                         }
                         targetData.bookList.add(selected);
                         sourceData.bookList.remove(selected);
+                        updateBookCount();
                         statusLabel.setText("Book moved to " + entry.getKey().getText());
                     });
                     moveToMenu.getItems().add(item);
@@ -146,7 +172,30 @@ public class LibraryController {
                             .then((ContextMenu) null)
                             .otherwise(contextMenu)
             );
+
+            // Double-click to open edit dialog
+            row.setOnMouseClicked(e -> {
+                if (e.getClickCount() == 2 && !row.isEmpty()) {
+                    openEditDialog(row.getItem());
+                }
+            });
+
             return row;
+        });
+
+        // Delete / Backspace key to remove selected book
+        table.setOnKeyPressed(e -> {
+            switch (e.getCode()) {
+                case DELETE, BACK_SPACE -> {
+                    Book selected = table.getSelectionModel().getSelectedItem();
+                    if (selected != null) {
+                        sourceData.bookList.remove(selected);
+                        updateBookCount();
+                        statusLabel.setText("Book removed.");
+                    }
+                }
+                default -> {}
+            }
         });
     }
 
@@ -172,6 +221,15 @@ public class LibraryController {
         });
     }
 
+    private void updateBookCount() {
+        LibraryTabData data = currentData();
+        if (data == null) { bookCountLabel.setText("0 books"); return; }
+        int total    = data.bookList.size();
+        long verified = data.bookList.stream().filter(Book::isVerified).count();
+        bookCountLabel.setText(total + " book" + (total == 1 ? "" : "s")
+                + (verified > 0 ? " · " + verified + " verified" : ""));
+    }
+
     public String addBook(Book book) {
         LibraryTabData data = currentData();
         if (data == null) return "No active library.";
@@ -179,6 +237,26 @@ public class LibraryController {
         data.bookList.add(book);
         statusLabel.setText("Book added");
         return "Book added";
+    }
+
+    private void openEditDialog(Book book) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("Book.fxml"));
+            VBox content = loader.load();
+            BookController bookController = loader.getController();
+            bookController.setLibraryController(this);
+            bookController.setFields(book);
+
+            Stage dialog = new Stage();
+            dialog.setTitle("Edit Book");
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.setScene(new Scene(content));
+            dialog.setResizable(false);
+            dialog.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+            statusLabel.setText("Error opening Edit Book dialog.");
+        }
     }
 
     // Menu handlers
@@ -212,23 +290,7 @@ public class LibraryController {
             showInfo("Please select a book.");
             return;
         }
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("Book.fxml"));
-            VBox content = loader.load();
-            BookController bookController = loader.getController();
-            bookController.setLibraryController(this);
-            bookController.setFields(selectedBook);
-
-            Stage dialog = new Stage();
-            dialog.setTitle("Edit Book");
-            dialog.initModality(Modality.APPLICATION_MODAL);
-            dialog.setScene(new Scene(content));
-            dialog.setResizable(false);
-            dialog.showAndWait();
-        } catch (IOException e) {
-            e.printStackTrace();
-            statusLabel.setText("Error opening Edit Book dialog.");
-        }
+        openEditDialog(selectedBook);
     }
 
     @FXML
@@ -277,7 +339,7 @@ public class LibraryController {
             Tab tab = new Tab(name.trim(), tabContent);
             tab.setClosable(false);
             tabDataMap.put(tab, new LibraryTabData(newTable));
-            setupContextMenu(newTable, tabDataMap.get(tab));
+            setupTableBehavior(newTable, tabDataMap.get(tab));
             libraryTabPane.getTabs().add(tab);
             libraryTabPane.getSelectionModel().select(tab);
             tabCounter++;

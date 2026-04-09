@@ -64,6 +64,7 @@
                                 <TableColumn fx:id="authorColumn" prefWidth="180.0" text="Author"/>
                                 <TableColumn fx:id="yearColumn"   prefWidth="80.0"  text="Year"/>
                                 <TableColumn fx:id="isbnColumn"   prefWidth="150.0" text="ISBN"/>
+                                <TableColumn fx:id="verifiedColumn"   prefWidth="50"    text="Verified"/>
                             </columns>
                         </TableView>
                     </content>
@@ -72,6 +73,7 @@
         </TabPane>
         <HBox>
             <Label fx:id="statusLabel" text="Ready"/>
+            <Label fx:id="bookCountLabel"  text="0"/>
         </HBox>
 
     </children>
