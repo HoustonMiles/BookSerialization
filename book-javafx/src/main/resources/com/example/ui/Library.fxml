@@ -73,7 +73,7 @@
         </TabPane>
         <HBox>
             <Label fx:id="statusLabel" text="Ready"/>
-            <Label fx:id="bookCountLabel"  text="0"/>
+            <Label fx:id="bookCountLabel"/>
         </HBox>
 
     </children>

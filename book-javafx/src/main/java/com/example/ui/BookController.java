@@ -29,7 +29,7 @@ public class BookController {
 
     @FXML
     private void initialize() {
-        // Tooltip on Remove button
+        // Tooltip on validate button
         Tooltip tooltip = new Tooltip("If you don't have all the info, this button can complete it for you.");
         tooltip.setShowDelay(javafx.util.Duration.millis(100));
         tooltip.setShowDuration(javafx.util.Duration.INDEFINITE);
@@ -82,6 +82,14 @@ public class BookController {
             statusLabel.setText(result);
             if ("Book added".equals(result)) clearFields();
         }
+    }
+
+    @FXML
+    private void handleClearButtonAction() {
+        titleField.clear();
+        authorField.clear();
+        yearField.clear();
+        isbnField.clear();
     }
 
     @FXML

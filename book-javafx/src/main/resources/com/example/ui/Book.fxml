@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<VBox alignment="CENTER" maxHeight="250.0" minHeight="250.0" prefHeight="250.0" prefWidth="600.0"
+<VBox alignment="CENTER" maxHeight="275.0" minHeight="275.0" prefHeight="275.0" prefWidth="600.0"
       spacing="10.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.example.ui.BookController">
    <children>
@@ -43,6 +43,8 @@
                     onAction="#handleValidateAction" text="Validate Book" />
             <Button fx:id="saveButton" mnemonicParsing="false"
                     onAction="#handleSaveButtonAction" text="Save Book" />
+            <Button fx:id="clearButton" mnemonicParsing="false"
+                    onAction="#handleClearButtonAction" text="Clear Book"/>
          </children>
       </HBox>
    </children>
